@@ -11,6 +11,7 @@ type Item = { href: Route; label: string; icon: string; jp?: boolean; badge?: st
 const MAIN: Item[] = [
   { href: "/dashboard", label: "Accueil", icon: "日", jp: true },
   { href: "/plan", label: "Plan d'étude", icon: "🗺️" },
+  { href: "/vrac" as Route, label: "Vrac", icon: "💡" },
 ];
 
 const LEARN: Item[] = [

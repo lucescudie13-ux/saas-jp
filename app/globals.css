@@ -33,6 +33,7 @@
     background:var(--paper);
     color:var(--ink);
     line-height:1.6;
+    overflow-x:clip;
     -webkit-font-smoothing:antialiased;
     background-image:
       radial-gradient(circle at 12% -10%, rgba(194,64,47,.04), transparent 40%),
@@ -216,10 +217,11 @@
   .confuse .ci .d{font-size:14px;color:var(--ink-soft)}
 
   table.conj{width:100%;border-collapse:collapse;font-size:14.5px;overflow:hidden;border-radius:12px;border:1px solid var(--line)}
-  table.conj td{padding:11px 16px;border-bottom:1px solid var(--line)}
-  table.conj tr:last-child td{border-bottom:none}
-  table.conj tr:nth-child(even){background:var(--paper-2)}
-  table.conj td:first-child{color:var(--ink-soft);font-weight:600;width:46%}
+  table.conj th,table.conj td{padding:10px 16px;border-bottom:1px solid var(--line)}
+  table.conj tr:last-child th,table.conj tr:last-child td{border-bottom:none}
+  table.conj tr:nth-child(odd){background:var(--card)}
+  table.conj tr:nth-child(even){background:#EFE7D6}
+  table.conj th:first-child,table.conj td:first-child{color:var(--ink-soft);font-weight:700;width:46%;text-align:left;background:rgba(158,46,32,.05);border-right:1px solid var(--line);white-space:nowrap}
   table.conj td:last-child{font-family:var(--jp);font-size:17px;color:var(--ink)}
   .group-badge{display:inline-block;background:var(--vermilion-soft);color:var(--vermilion-deep);font-weight:700;font-size:13px;padding:6px 14px;border-radius:10px;margin-bottom:14px}
 
@@ -657,7 +659,7 @@
     .fc-jp{font-size:42px}
     .chart{gap:6px;height:150px}
     .d-lemma{font-size:56px}
-    table.conj td{padding:9px 12px}
+    table.conj th,table.conj td{padding:9px 12px}
   }
   @media(max-width:480px){
     header.topbar .pill:last-of-type{display:none}
@@ -862,23 +864,38 @@
 .empty{color:var(--ink-soft);background:var(--card);border:1px dashed var(--line-strong);border-radius:14px;padding:24px;text-align:center}
 .empty code{background:var(--paper-2);padding:2px 7px;border-radius:6px;font-size:13px}
 
-/* Listes d'éléments */
-.vlist{list-style:none;display:flex;flex-direction:column;gap:10px}
-.vrow{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;
-  padding:14px 18px;cursor:pointer;transition:.15s}
-.vrow:hover{border-color:var(--vermilion);transform:translateX(2px);box-shadow:var(--shadow)}
-.vglyph{font-family:var(--jp);font-size:30px;font-weight:700;color:var(--ink);min-width:54px;text-align:center}
-.vmid{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.vreading{font-family:var(--jp);color:var(--vermilion-deep);font-size:14px;font-weight:600}
-.vgloss{color:var(--ink-soft);font-size:14.5px}
-.vtags{display:flex;align-items:center;gap:8px;flex:none}
-.vtype{font-size:11.5px;font-weight:700;color:var(--ink-faint);background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+/* Listes d'éléments — table compacte, dense et alignée (façon liste PDF) */
+.vlist{list-style:none;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:var(--shadow)}
+.vlist .vrow{display:grid;grid-template-columns:minmax(54px,90px) minmax(74px,116px) 1fr auto;align-items:center;gap:14px;
+  margin:0;padding:7px 16px;border:none;border-top:1px solid var(--line);border-radius:0;background:transparent;
+  cursor:pointer;transition:background .12s;transform:none;box-shadow:none}
+.vlist .vrow:first-child{border-top:none}
+.vlist .vrow:nth-child(even){background:var(--paper)}
+.vlist .vrow:hover{background:var(--vermilion-soft);transform:none;box-shadow:none}
+.vglyph{font-family:var(--jp);font-size:19px;font-weight:700;color:var(--ink);text-align:left;line-height:1.35;word-break:break-word}
+.vreading{font-family:var(--jp);color:var(--vermilion-deep);font-size:12.5px;font-weight:700;line-height:1.45;word-break:break-word}
+.vgloss{color:var(--ink);font-size:13px;line-height:1.4;min-width:0}
+.vtags{display:flex;align-items:center;gap:6px;flex:none}
+.vtype{font-size:10px;font-weight:700;color:var(--ink-faint);background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:2px 8px;white-space:nowrap}
 .jlpt-badge{font-size:11px;font-weight:800;color:#fff;background:var(--vermilion);border-radius:7px;padding:3px 9px;letter-spacing:.3px}
+@media(max-width:560px){
+  .vlist .vrow{grid-template-columns:minmax(48px,80px) 1fr;gap:10px;padding:8px 12px}
+  .vreading{display:none}
+  .vtags{display:none}
+}
 
 /* Mode liste / révision */
 .mode-switch{display:inline-flex;gap:4px;background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:18px}
 .mode-btn{border:none;background:transparent;font-family:var(--sans);font-weight:700;font-size:13.5px;color:var(--ink-soft);padding:7px 16px;border-radius:9px;cursor:pointer;transition:.15s}
 .mode-btn.active{background:var(--card);color:var(--vermilion-deep);box-shadow:var(--shadow)}
+.mode-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Vocabulaire regroupé par leçon */
+.vlesson-groups{display:flex;flex-direction:column;gap:24px}
+.vlesson-title{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-family:var(--sans);font-size:17px;
+  font-weight:800;letter-spacing:-.2px;color:var(--ink);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.vlesson-num{flex:none;font-size:12px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--vermilion-deep);
+  background:var(--vermilion-soft);border-radius:99px;padding:3px 10px}
 
 /* Tiroir fiche mot */
 .drawer-scrim{position:fixed;inset:0;background:rgba(34,32,29,.34);z-index:70;backdrop-filter:blur(2px)}
@@ -896,17 +913,34 @@
 .badge-type{font-size:11.5px;font-weight:700;color:var(--ink-faint);background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:3px 10px;width:max-content}
 
 .block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:14px}
-.block-title{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--vermilion-deep);font-weight:800;margin-bottom:10px}
+.block-title{display:flex;align-items:center;gap:9px;font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--vermilion-deep);font-weight:800;margin-bottom:10px}
+/* Numéro de section (fiches de caractère) */
+.block-num{flex:none;font-variant-numeric:tabular-nums;letter-spacing:0;font-size:11px;font-weight:800;color:var(--vermilion);background:var(--vermilion-soft);border-radius:7px;padding:2px 7px}
 .block-body{color:var(--ink);line-height:1.6;font-size:14.5px}
 .block-body p{margin:0 0 8px}
 .readings{display:flex;gap:8px;flex-wrap:wrap}
+/* Caractéristiques (nature, groupe verbal, formation…) — liste clé / valeur */
+.fiche-traits{list-style:none;display:flex;flex-direction:column;gap:9px}
+.fiche-traits li{display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:baseline}
+.fiche-traits .ft-k{color:var(--vermilion-deep);font-weight:800;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase}
+.fiche-traits .ft-v{color:var(--ink);font-size:14.5px;line-height:1.5}
+@media(max-width:560px){.fiche-traits li{grid-template-columns:1fr;gap:2px}}
+/* Barre de recherche du vocabulaire */
+.vocab-toolbar{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.vocab-search{flex:1;min-width:220px;border:1px solid var(--line-strong);border-radius:12px;padding:11px 14px;font-family:var(--sans);font-size:15px;background:var(--card);color:var(--ink)}
+.vocab-search:focus{outline:none;border-color:var(--vermilion);box-shadow:0 0 0 3px var(--vermilion-soft)}
+.vocab-count{font-size:13px;font-weight:700;color:var(--ink-soft);white-space:nowrap}
 .reading-chip{background:var(--paper-2);border:1px solid var(--line);border-radius:9px;padding:6px 12px;font-family:var(--jp)}
 .reading-chip b{color:var(--vermilion-deep);margin-right:6px;font-size:12px;text-transform:uppercase}
 .parts,.keys,.examples,.confuse{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.parts li{display:flex;gap:10px;align-items:baseline}
-.part-g{font-family:var(--jp);font-size:20px;font-weight:700}
-.part-r{color:var(--vermilion-deep);font-family:var(--jp);font-size:13px;min-width:70px}
-.part-m{color:var(--ink-soft)}
+/* Sous-titre « Chaque élément séparément » (décomposition d'un caractère) */
+.parts-label{margin-top:12px;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-faint);font-weight:800}
+.parts li{display:flex;gap:14px;align-items:flex-start;padding:8px 0}
+.parts li + li{border-top:1px dashed var(--line)}
+.part-g{font-family:var(--jp);font-size:34px;line-height:1;font-weight:700;color:var(--vermilion-deep);flex:none;width:52px;text-align:center}
+.part-info{display:flex;flex-direction:column;gap:3px;padding-top:2px}
+.part-r{color:var(--ink-faint);font-family:var(--jp);font-size:12.5px;font-weight:700}
+.part-m{color:var(--ink);font-size:14px;line-height:1.45}
 .examples li{border-left:3px solid var(--vermilion-soft);padding-left:12px}
 .ex-jp{font-family:var(--jp);font-size:16px;font-weight:600}
 .ex-yomi{font-family:var(--jp);color:var(--vermilion-deep);font-size:13px}
@@ -914,6 +948,25 @@
 .conj{width:100%;border-collapse:collapse}
 .conj th{text-align:left;color:var(--ink-soft);font-weight:600;font-size:13px;padding:6px 10px 6px 0;white-space:nowrap}
 .conj td{font-family:var(--jp);font-size:15px;padding:6px 0;border-bottom:1px solid var(--line)}
+
+/* Fiche de grammaire (GrammarDrawer) */
+.grammar-callout{background:var(--vermilion-soft);border-radius:12px;padding:12px 14px;color:var(--ink);margin:0}
+.grammar-steps{list-style:none;display:flex;flex-direction:column;gap:0;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.grammar-steps li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.grammar-steps li:last-child{border-bottom:none}
+.grammar-steps li:last-child .gs-jp{color:var(--vermilion-deep)}
+.grammar-steps li:nth-child(even){background:var(--paper-2)}
+.gs-jp{font-family:var(--jp);font-size:18px;font-weight:700;color:var(--ink);flex:none}
+.gs-romaji{color:var(--vermilion-deep);font-size:12.5px;font-style:italic;min-width:120px}
+.gs-fr{color:var(--ink-soft);font-size:13.5px;flex:1;min-width:120px;text-align:right}
+.grammar-mistakes{list-style:none;display:flex;flex-direction:column;gap:8px;margin:0;padding:0}
+.grammar-mistakes li{display:flex;flex-direction:column;gap:2px;border-left:3px solid var(--line);padding-left:12px}
+.grammar-mistakes li.ok{border-left-color:#4c8a3f}
+.grammar-mistakes li.ko{border-left-color:var(--vermilion)}
+.grammar-mistakes .gm-form{font-family:var(--jp);font-size:16px;font-weight:700}
+.grammar-mistakes li.ok .gm-form{color:#3c6b34}
+.grammar-mistakes li.ko .gm-form{color:var(--vermilion-deep)}
+.grammar-mistakes .gm-note{color:var(--ink-soft);font-size:13.5px}
 
 /* Flashcards */
 .flash{max-width:460px;margin:0 auto;text-align:center}
@@ -1013,3 +1066,365 @@
 .dlg-fr{color:var(--ink-soft);font-size:14px}
 .read-body{font-family:var(--jp);font-size:18px;line-height:2;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
 .read-trans{color:var(--ink-soft);margin-top:12px;line-height:1.7}
+
+/* ===== Vrac (boîte à idées) ===== */
+.vrac-card{display:block;text-decoration:none;color:inherit;padding:11px 16px;border-radius:11px;margin-bottom:0;transition:border-color .15s ease,box-shadow .15s ease,transform .05s ease}
+.vrac-card:hover{border-color:var(--line-strong);box-shadow:var(--shadow-lg)}
+.vrac-card:active{transform:translateY(1px)}
+.vrac-card .block-title{font-family:var(--sans);text-transform:none;font-size:13px;letter-spacing:.4px;font-weight:700;color:var(--vermilion)}
+.vrac-group{margin-bottom:26px}
+.vrac-group:last-child{margin-bottom:0}
+.vrac-group-title{font-family:var(--sans);text-transform:none;font-size:19px;letter-spacing:-.2px;font-weight:800;color:var(--vermilion-deep);margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+.vrac-list{display:flex;flex-direction:column;gap:6px}
+.vrac-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.vrac-tag{font-size:11px;font-weight:700;letter-spacing:.3px;padding:3px 9px;border-radius:999px;background:var(--paper-2);color:var(--ink-soft);border:1px solid var(--line)}
+.vrac-back{display:inline-block;font-size:13px;font-weight:700;color:var(--ink-faint);text-decoration:none;margin-bottom:12px}
+.vrac-back:hover{color:var(--vermilion)}
+
+/* ===== Template de cours (audio + texte) ===== */
+.course-audio{margin-bottom:28px}
+.audio-card{display:flex;align-items:center;gap:18px;padding:20px 22px;border-radius:18px;
+  background:linear-gradient(135deg,var(--vermilion-soft),var(--paper-2));border:1px solid var(--line);box-shadow:var(--shadow)}
+.audio-glyph{display:flex;align-items:center;justify-content:center;flex:none;width:58px;height:58px;border-radius:16px;
+  background:var(--card);border:1px solid var(--line);font-size:26px;box-shadow:var(--shadow)}
+.audio-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.audio-title{font-weight:800;color:var(--vermilion-deep);font-size:14px;letter-spacing:.2px}
+.audio-el{width:100%;height:38px}
+.audio-wave{display:flex;align-items:center;gap:3px;height:44px;overflow:hidden}
+.audio-wave span{flex:1;min-width:3px;max-width:7px;border-radius:99px;background:var(--vermilion);opacity:.35}
+.audio-wave span:nth-child(3n){opacity:.6}
+.audio-wave span:nth-child(4n){opacity:.22}
+.audio-hint{color:var(--ink-soft);font-size:12.5px}
+.audio-hint code{background:var(--card);padding:2px 7px;border-radius:6px;font-size:11.5px;border:1px solid var(--line)}
+
+.course-body{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow)}
+.course-section{margin-bottom:26px}
+.course-section:last-child{margin-bottom:0}
+.course-section h2{font-size:18px;font-weight:800;color:var(--vermilion-deep);margin-bottom:10px}
+.course-section p{color:var(--ink);line-height:1.75;margin-bottom:10px;max-width:70ch}
+.course-section p:last-child{margin-bottom:0}
+
+/* Encadré (formule / point essentiel / à retenir) */
+.course-callout{display:flex;flex-direction:column;gap:3px;margin-top:12px;padding:14px 16px;border-radius:12px;
+  background:var(--vermilion-soft);border-left:4px solid var(--vermilion);color:var(--ink);line-height:1.6}
+.course-callout b{color:var(--vermilion-deep);font-size:12px;letter-spacing:1px;text-transform:uppercase}
+.course-callout span{font-size:15px}
+
+/* Tableau de cours */
+.course-table-wrap{margin-top:12px;overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+.course-table{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
+.course-table thead th{text-align:left;background:var(--vermilion);color:#fff;font-weight:700;font-size:12.5px;
+  letter-spacing:.3px;padding:10px 14px;white-space:nowrap}
+.course-table tbody td{padding:10px 14px;border-top:1px solid var(--line);color:var(--ink);vertical-align:top}
+.course-table thead th + th{border-left:1px solid rgba(255,255,255,.28)}
+.course-table tbody td + td{border-left:1px solid var(--line)}
+/* Zebra plus marqué : lignes paires beige chaud, impaires blanches → cases lisibles */
+.course-table tbody tr:nth-child(odd){background:var(--card)}
+.course-table tbody tr:nth-child(even){background:#EFE7D6}
+.course-table tbody td:first-child{color:var(--ink-soft);font-weight:600;white-space:nowrap;background:rgba(158,46,32,.05)}
+.course-table tbody td:nth-child(3),.course-table tbody td:nth-child(2){font-family:var(--jp);font-size:15.5px}
+
+/* Chaîne d'emboîtement */
+.course-chain{list-style:none;display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin:14px 0 0;padding:0;counter-reset:none}
+.course-chain li{position:relative;display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:12px;
+  background:var(--paper-2);border:1px solid var(--line);min-width:96px}
+.course-chain li:not(:last-child)::after{content:"→";position:absolute;right:-11px;top:50%;transform:translateY(-50%);
+  color:var(--vermilion);font-weight:800;z-index:1}
+.course-chain li:last-child{background:var(--vermilion-soft);border-color:transparent}
+.cc-jp{font-family:var(--jp);font-size:18px;font-weight:700;color:var(--ink)}
+.course-chain li:last-child .cc-jp{color:var(--vermilion-deep)}
+.cc-romaji{color:var(--vermilion-deep);font-size:11.5px;font-style:italic}
+.cc-fr{color:var(--ink-soft);font-size:12px}
+
+/* Cartes d'exemples */
+.course-examples{list-style:none;display:flex;flex-direction:column;gap:8px;margin:14px 0 0;padding:0}
+.course-examples li{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:12px;
+  background:var(--paper-2);border-left:3px solid var(--vermilion)}
+.ce-jp{font-family:var(--jp);font-size:16px;font-weight:600;color:var(--ink)}
+.ce-fr{color:var(--ink-soft);font-size:13.5px}
+
+/* Erreurs à éviter */
+.course-mistakes{list-style:none;display:flex;flex-direction:column;gap:8px;margin:8px 0 0;padding:0}
+.course-mistakes li{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:12px;border:1px solid var(--line)}
+.course-mistakes li.ok{background:#eef6ea;border-color:#bcd4b5}
+.course-mistakes li.ko{background:#fbeeec;border-color:#e6c3bd}
+.cm-form{font-family:var(--jp);font-size:16px;font-weight:700}
+.cm-mark{font-family:var(--sans);margin-right:4px}
+.course-mistakes li.ok .cm-form{color:#3c6b34}
+.course-mistakes li.ko .cm-form{color:var(--vermilion-deep)}
+.cm-note{color:var(--ink-soft);font-size:13px}
+
+/* Phrase japonaise interactive (dictionnaire au survol) */
+.jp-sentence-card{margin-top:14px;padding:22px 24px;border-radius:16px;background:var(--paper-2);border:1px solid var(--line)}
+.jp-text{font-family:var(--jp);font-size:30px;line-height:1.9;color:var(--ink);word-break:break-word}
+/* Variante compacte : paragraphe de lecture (plus de texte, plus lisible). */
+.jp-text-sm{font-size:21px;line-height:2.15}
+.jp-plain{color:var(--ink-soft)}
+.jp-word{position:relative;cursor:help;border-bottom:2px dashed var(--line-strong);border-radius:3px;
+  padding:0 1px;transition:background .12s ease,border-color .12s ease}
+.jp-word:hover,.jp-word:focus-visible,.jp-word.open{background:var(--vermilion-soft);border-bottom-color:var(--vermilion);outline:none}
+.jp-pop{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);z-index:60;
+  width:max-content;max-width:260px;display:flex;flex-direction:column;gap:5px;text-align:left;
+  background:var(--card);border:1px solid var(--line-strong);border-radius:12px;padding:12px 14px;
+  box-shadow:var(--shadow-lg);font-family:var(--sans);cursor:default;animation:jp-pop-in .12s ease}
+.jp-pop::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:7px solid transparent;border-top-color:var(--card)}
+.jp-pop-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.jp-pop-w{font-family:var(--jp);font-size:22px;font-weight:700;color:var(--ink);line-height:1}
+.jp-pop-pos{font-size:11px;font-weight:700;color:var(--vermilion-deep);background:var(--vermilion-soft);
+  border-radius:999px;padding:2px 8px;white-space:nowrap}
+.jp-pop-reading{font-family:var(--jp);font-size:13.5px;color:var(--vermilion-deep);font-weight:600}
+.jp-pop-meaning{font-size:14px;color:var(--ink);line-height:1.45}
+@keyframes jp-pop-in{from{opacity:0;transform:translateX(-50%) translateY(4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+@media (max-width:640px){.course-body{padding:20px 18px}.audio-card{padding:16px}.course-chain li:not(:last-child)::after{display:none}
+  .jp-text{font-size:26px}.jp-text-sm{font-size:19px;line-height:2.05}.jp-pop{max-width:min(260px,80vw)}}
+
+/* ===== Exercice de traduction ===== */
+.ex-wrap{max-width:720px;margin:0 auto}
+.ex-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.ex-count{font-weight:800;font-size:15px;color:var(--vermilion-deep);white-space:nowrap}
+.ex-count-total{color:var(--ink-faint);font-weight:700}
+.ex-progress{flex:1;height:8px;border-radius:99px;background:var(--paper-2);overflow:hidden;border:1px solid var(--line)}
+.ex-progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--vermilion),var(--gold));transition:width .4s ease;border-radius:99px}
+.ex-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 26px 22px;box-shadow:var(--shadow)}
+.ex-prompt-label{font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:800;color:var(--vermilion-deep);margin-bottom:12px}
+/* Taille « paragraphe » : bien lisible, adaptée à des phrases longues sur plusieurs lignes. */
+.ex-jp{font-family:var(--jp);font-size:22px;line-height:1.95;color:var(--ink);font-weight:600;margin:0 0 10px;max-width:60ch}
+.ex-reading{font-family:var(--jp);color:var(--vermilion-deep);font-size:15px;line-height:1.85;margin:0 0 12px;max-width:60ch}
+.ex-hint-btn{background:none;border:none;color:var(--vermilion-deep);font-weight:700;font-size:13px;cursor:pointer;padding:0;margin:0 0 12px;text-decoration:underline}
+.ex-input{width:100%;border:1px solid var(--line-strong);border-radius:12px;padding:12px 14px;font-family:var(--sans);font-size:15px;line-height:1.6;resize:vertical;background:var(--paper);color:var(--ink);margin-top:4px}
+.ex-input:focus{outline:none;border-color:var(--vermilion);box-shadow:0 0 0 3px var(--vermilion-soft)}
+.ex-input:disabled{background:var(--paper-2);color:var(--ink-soft)}
+.ex-actions{display:flex;gap:10px;margin-top:14px}
+.ex-rate{justify-content:flex-end}
+.btn.rate-good{border-color:#bcd4b5;color:#3c6b34;background:#eef6ea}
+.btn.rate-good:hover{background:#e2efdb}
+.ex-answer{margin-top:16px;padding:14px 16px;border-radius:12px;background:var(--paper-2);border-left:4px solid var(--vermilion)}
+.ex-answer-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:800;color:var(--vermilion-deep);margin-bottom:6px}
+.ex-answer-fr{font-size:16px;color:var(--ink);margin:0;line-height:1.6}
+/* Consigne quand le sens est français → japonais (le prompt est en français). */
+.ex-prompt-fr{font-size:20px;line-height:1.6;color:var(--ink);font-weight:600;margin:0 0 10px;max-width:60ch}
+.ex-answer-note{font-size:13.5px;color:var(--ink-soft);margin:8px 0 0}
+/* Récapitulatif */
+.ex-done{max-width:640px;margin:0 auto;text-align:center}
+.ex-done-emoji{font-size:44px}
+.ex-done h2{font-size:22px;margin:8px 0 4px}
+.ex-done-score{font-size:16px;color:var(--ink-soft);margin-bottom:14px}
+.ex-done-score b{color:var(--vermilion-deep);font-size:20px}
+.ex-done .ex-progress{margin-bottom:18px}
+.ex-recap{list-style:none;text-align:left;display:flex;flex-direction:column;gap:8px;margin:18px 0 22px;padding:0}
+.ex-recap li{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:10px 14px;border-radius:12px;border:1px solid var(--line)}
+.ex-recap-mark{grid-row:span 2;font-weight:800;font-size:18px;align-self:center}
+.ex-recap li.good{background:#eef6ea;border-color:#bcd4b5}
+.ex-recap li.good .ex-recap-mark{color:#3c6b34}
+.ex-recap li.again{background:#fbeeec;border-color:#e6c3bd}
+.ex-recap li.again .ex-recap-mark{color:var(--vermilion-deep)}
+.ex-recap-jp{font-family:var(--jp);font-size:16px;color:var(--ink)}
+.ex-recap-fr{font-size:13.5px;color:var(--ink-soft)}
+@media (max-width:560px){.ex-card{padding:20px 18px}.ex-jp{font-size:20px}.ex-prompt-fr{font-size:18px}.ex-actions{flex-direction:column}.ex-actions .btn{width:100%}}
+
+/* Onglets de sens (JP → FR / FR → JP) au-dessus de l'exercice */
+.ex2-tabs{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.ex2-tab{flex:1;min-width:180px;display:flex;flex-direction:column;gap:3px;align-items:flex-start;
+  padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:var(--card);
+  cursor:pointer;font-family:var(--sans);font-size:15px;font-weight:800;color:var(--ink-soft);transition:all .15s ease}
+.ex2-tab:hover{border-color:var(--line-strong)}
+.ex2-tab.active{border-color:var(--vermilion);color:var(--vermilion-deep);background:var(--vermilion-soft);box-shadow:var(--shadow)}
+.ex2-tab-n{font-size:12px;font-weight:600;color:var(--ink-soft);letter-spacing:.2px}
+.ex2-tab.active .ex2-tab-n{color:var(--vermilion-deep)}
+@media (max-width:560px){.ex2-tab{min-width:0}}
+
+/* Appel à l'exercice en fin de leçon */
+.lesson-cta{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  margin-top:26px;padding:22px 24px;border-radius:18px;
+  background:linear-gradient(135deg,var(--vermilion-soft),var(--paper-2));border:1px solid var(--line)}
+.lesson-cta-text h3{font-size:18px;font-weight:800;color:var(--vermilion-deep);margin:0 0 4px}
+.lesson-cta-text p{color:var(--ink-soft);font-size:14px;margin:0}
+.lesson-cta-btn{flex:none;text-decoration:none;font-size:15px;padding:12px 20px}
+
+/* ===== Modèle de leçon (plan) — feuille de route guidée ===== */
+.plan-model-link{text-decoration:none;margin-bottom:24px;transition:border-color .15s,box-shadow .15s,transform .15s}
+.plan-model-link:hover{border-color:var(--line-strong);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.lm-part-tag{flex:none;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--vermilion-deep);background:var(--vermilion-soft);border-radius:999px;padding:5px 12px}
+
+/* -------- Feuille de route -------- */
+.rm{display:flex;flex-direction:column}
+.rm-part{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0 14px}
+.rm-part:first-of-type{margin-top:2px}
+.rm-part-head{display:flex;flex-direction:column;gap:2px}
+.rm-part-eyebrow{font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--vermilion)}
+.rm-part-title{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--ink);line-height:1.1}
+.rm-part-prog{flex:none;font-size:12.5px;font-weight:800;color:var(--ink-soft);background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+.rm-part-prog.is-done{color:#3c6b34;background:#eef6ea;border-color:#bcd4b5}
+.rm-soon{font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:#9a6b1e;background:#FBF1D4;border:1px solid #E7CF92;border-radius:999px;padding:3px 10px}
+.rm-progress{height:6px;border-radius:99px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden;margin:-6px 0 20px}
+.rm-progress > i{display:block;height:100%;background:#3c6b34;border-radius:99px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.rm-note{background:#eef6ea;border:1px solid #bcd4b5;color:#3c6b34;border-radius:12px;padding:12px 16px;font-weight:700;font-size:14px;margin:2px 0 20px}
+.rm-steps{list-style:none;margin:0 0 6px;padding:0}
+.rm-step{display:grid;grid-template-columns:40px 1fr;gap:16px;position:relative;padding-bottom:14px}
+.rm-step:not(:last-child)::before{content:"";position:absolute;left:19px;top:42px;bottom:-2px;width:2px;background:var(--line)}
+.rm-node{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:18px;line-height:1;background:var(--card);border:2px solid var(--line);color:var(--ink-soft);z-index:1;transition:.15s}
+.rm-step.done .rm-node{background:#3c6b34;border-color:#3c6b34;color:#fff;font-weight:800}
+.rm-step.available .rm-node{border-color:var(--vermilion);background:var(--vermilion-soft);color:var(--vermilion-deep);box-shadow:0 0 0 4px var(--vermilion-soft)}
+.rm-step.construction .rm-node{background:var(--paper-2);color:var(--ink-faint);border-color:var(--line)}
+.rm-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s,transform .15s}
+.rm-step.available .rm-card{border-color:var(--line-strong)}
+.rm-step.available:hover .rm-card{border-color:var(--vermilion);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.rm-step.done .rm-card{background:linear-gradient(180deg,var(--card),#f6faf3)}
+.rm-step.construction .rm-card{background:linear-gradient(180deg,var(--card),var(--paper));opacity:.94}
+.rm-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.rm-card-top h3{font-size:16px;font-weight:800;letter-spacing:-.2px;color:var(--ink)}
+.rm-card p{font-size:13px;color:var(--ink-soft);margin:5px 0 0;line-height:1.5}
+.rm-actions{margin-top:13px}
+.rm-actions .btn{padding:8px 16px;font-size:13px;border-radius:10px}
+.rm-status{font-size:10.5px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;border-radius:999px;padding:4px 10px;white-space:nowrap;flex:none}
+.rm-status.s-done{background:#eef6ea;color:#3c6b34;border:1px solid #bcd4b5}
+.rm-status.s-available{background:var(--vermilion-soft);color:var(--vermilion-deep);border:1px solid transparent}
+.rm-status.s-construction{background:#FBF1D4;color:#9a6b1e;border:1px solid #E7CF92}
+
+/* -------- Étape ouverte -------- */
+.lm-step{display:flex;flex-direction:column}
+.lm-back{align-self:flex-start;background:none;border:none;color:var(--vermilion-deep);font-family:var(--sans);font-weight:700;font-size:14px;cursor:pointer;padding:0;margin-bottom:6px}
+.lm-back:hover{text-decoration:underline}
+.lm-panel-head{display:flex;align-items:center;gap:11px;margin:6px 0 8px}
+.lm-panel-ic{font-size:22px;line-height:1;flex:none}
+.lm-panel-head h2{font-size:19px;font-weight:800;letter-spacing:-.3px;color:var(--ink)}
+.lm-intro{color:var(--ink-soft);font-size:14.5px;margin:0 0 14px}
+.lm-flash{max-width:560px;margin:0 auto}
+.lm-nav{display:flex;justify-content:flex-end;margin-top:22px}
+.lm-validate{width:100%;justify-content:center;margin-top:18px;padding:14px 20px;font-size:15px}
+
+/* Liste de points (grammaire / conjugaison) */
+.lm-plist{list-style:none;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:var(--shadow)}
+.lm-prow{display:flex;align-items:center;gap:14px;padding:13px 16px;border-top:1px solid var(--line);cursor:pointer;transition:background .12s}
+.lm-prow:first-child{border-top:none}
+.lm-prow:nth-child(even){background:var(--paper)}
+.lm-prow:hover{background:var(--vermilion-soft)}
+.lm-prow-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.lm-prow-title{font-weight:800;font-size:15px;color:var(--ink)}
+.lm-prow-desc{font-size:13px;color:var(--ink-soft)}
+.lm-prow-ar{flex:none;color:var(--ink-faint);font-size:22px;font-weight:700}
+.drawer-detail-title{font-size:20px;font-weight:800;letter-spacing:-.3px;color:var(--vermilion-deep);margin:0 0 16px;padding-right:44px}
+
+/* -------- Squelettes de la partie 2 -------- */
+.lm-constr-banner{display:flex;align-items:center;gap:9px;background:#FBF1D4;border:1px solid #E7CF92;color:#9a6b1e;border-radius:12px;padding:11px 15px;font-weight:700;font-size:13.5px;margin-bottom:8px;line-height:1.45}
+.lm-subh{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--vermilion-deep);font-weight:800;margin:24px 0 12px}
+.lm-jp-text{font-family:var(--jp);font-size:19px;line-height:2.05;color:var(--ink);max-width:62ch}
+.lm-audio{margin-top:4px}
+.lm-prompt{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:15px 18px;margin-bottom:14px}
+.lm-prompt-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--vermilion-deep);font-weight:800;margin-bottom:6px}
+.lm-prompt p{font-family:var(--jp);font-size:16px;color:var(--ink);line-height:1.7;margin:0}
+.lm-aifeedback{margin-top:14px;background:var(--paper-2);border:1px dashed var(--line-strong);border-radius:12px;padding:14px 16px;color:var(--ink-soft);font-size:13.5px;line-height:1.5}
+.lm-record{display:flex;align-items:center;gap:14px;margin:2px 0 6px}
+.lm-mic{width:62px;height:62px;border-radius:50%;border:none;background:var(--vermilion);color:#fff;font-size:24px;display:grid;place-items:center}
+.lm-record span{color:var(--ink-soft);font-size:14px}
+.lm-step .btn:disabled{opacity:.55;cursor:not-allowed}
+.lm-dico-hint{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-faint);margin:10px 0 0}
+/* Carte question avec saisie + auto-évaluation (compréhension) */
+.ac-actions{margin-top:10px}
+.ac-rate{display:flex;gap:8px;margin-top:10px;justify-content:flex-end;flex-wrap:wrap}
+.ac-verdict{margin-top:10px;font-weight:800;font-size:13px}
+.ac-verdict.good{color:#3c6b34}
+.ac-verdict.again{color:var(--vermilion-deep)}
+
+@media(max-width:560px){
+  .lm-nav{justify-content:stretch}
+  .lm-nav .btn{width:100%}
+  .rm-card-top{flex-wrap:wrap}
+}
+@media (max-width:560px){.lesson-cta{flex-direction:column;align-items:stretch}.lesson-cta-btn{text-align:center}}
+
+/* ===================== Plan — feuille de route des leçons ===================== */
+.cur{display:flex;flex-direction:column}
+.lvl-tab-sub{font-weight:600;font-size:12px;opacity:.7}
+.lvl-tab.active .lvl-tab-sub{opacity:.9}
+.cur-track{margin-bottom:26px}
+.cur-track-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.cur-track-title{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:800;letter-spacing:-.2px;color:var(--ink)}
+.cur-track-prog{flex:none;font-size:12.5px;font-weight:800;color:var(--ink-soft);background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+.cur-track-prog.full{color:#3c6b34;background:#eef6ea;border-color:#bcd4b5}
+.cur-grid{display:grid;grid-template-columns:repeat(auto-fill,54px);gap:9px}
+.cur-cell{aspect-ratio:1;display:grid;place-items:center;border-radius:14px;border:1px solid var(--line);background:var(--card);
+  color:var(--ink);font-weight:800;font-size:15px;text-decoration:none;box-shadow:var(--shadow);transition:transform .14s,border-color .14s,box-shadow .14s}
+.cur-cell:hover{border-color:var(--vermilion);transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.cur-cell.done{background:#3c6b34;border-color:#3c6b34;color:#fff}
+.cur-cell.done:hover{border-color:#2f5a29}
+.cur-cell-check{font-size:17px}
+.cur-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 14px}
+.cur-title{font-size:16px;font-weight:800;color:var(--ink)}
+@media(max-width:560px){.cur-grid{grid-template-columns:repeat(auto-fill,48px);gap:8px}.cur-cell{font-size:14px}}
+
+/* Leçon combinée : modules d'apprentissage */
+.lr{display:flex;flex-direction:column}
+.lr-modules{display:flex;flex-direction:column;gap:12px}
+.lr-mod{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow)}
+.lr-mod.done{background:linear-gradient(180deg,var(--card),#f6faf3);border-color:#bcd4b5}
+.lr-mod.locked{background:linear-gradient(180deg,var(--card),var(--paper));opacity:.94}
+.lr-mod-top{display:flex;align-items:center;gap:12px}
+.lr-mod-ic{font-size:22px;line-height:1;flex:none}
+.lr-mod-titles{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.lr-mod-track{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--vermilion-deep)}
+.lr-mod-title{font-size:15px;font-weight:800;color:var(--ink)}
+.lr-mod-note{font-size:13px;color:var(--ink-soft);margin:10px 0 12px}
+.lr-mod-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.lr-mod-hint{font-size:12px;color:var(--ink-faint);font-style:italic}
+.ex-validated{font-size:13px;font-weight:800;color:#3c6b34}
+.lr-part2{margin-top:16px}
+
+/* Cours d'un point de grammaire (dans le tiroir) */
+.gr{display:flex;flex-direction:column}
+.gr-subtitle{color:var(--ink-soft);font-style:italic;margin:0 0 14px}
+.gr-objective{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin-bottom:16px}
+.gr-obj-label{display:block;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--vermilion-deep);margin-bottom:4px}
+.gr-objective p{margin:0;color:var(--ink);line-height:1.6}
+.gr-heading{font-size:15.5px;font-weight:800;color:var(--vermilion-deep);margin:22px 0 10px}
+.gr-para{color:var(--ink);line-height:1.75;margin:0 0 10px}
+.gr-bullets{margin:0 0 12px;padding-left:20px}
+.gr-bullets li{margin-bottom:6px;line-height:1.6;color:var(--ink)}
+
+/* Compréhension écrite */
+.comp-title{font-family:var(--jp);font-size:18px;font-weight:800;color:var(--ink);margin:0 0 14px}
+.comp-text{background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px}
+.comp-text p{font-family:var(--jp);font-size:16px;line-height:2;color:var(--ink);margin:0 0 12px}
+.comp-text p:last-child{margin-bottom:0}
+.comp-words{font-family:var(--jp);font-size:13.5px;color:var(--ink-soft);margin:0 0 8px}
+.comp-words b{font-family:var(--sans);color:var(--vermilion-deep)}
+
+/* Squelette d'une leçon (contenu à venir) */
+.lecon-skeleton{text-align:center;padding:40px 28px}
+.lecon-skeleton-ic{font-size:40px;line-height:1;margin-bottom:6px}
+.lecon-skeleton h3{font-size:18px;font-weight:800;color:var(--ink);margin-bottom:6px}
+.lecon-skeleton p{max-width:52ch;margin:0 auto;color:var(--ink-soft)}
+.btn.vlb-done{background:#eef6ea;border:1px solid #bcd4b5;color:#3c6b34}
+.btn.vlb-done:hover{background:#e4f0df}
+
+/* ===================== Ajustements téléphone ===================== */
+@media(max-width:600px){
+  /* Barre du haut : compacte, sans débordement (le menu ☰ occupe la gauche) */
+  header.topbar{gap:7px;padding:11px 14px;padding-left:60px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  header.topbar::-webkit-scrollbar{display:none}
+  header.topbar .pill{font-size:12px;padding:6px 11px;white-space:nowrap}
+  header.topbar > .pill:first-child{display:none} /* masque « Bonjour, … » */
+  /* Titres de page adaptés */
+  .page-head h1{font-size:24px}
+  .page-head p{font-size:14px}
+  /* Tiroir de détail plein écran, marges réduites */
+  .drawer{padding:22px 16px 54px}
+  .drawer-detail-title{font-size:18px;padding-right:40px}
+  .dh-glyph{font-size:52px}
+  /* Flashcards plus compactes */
+  .flashcard{padding:34px 20px;min-height:180px}
+  .fc-glyph{font-size:44px}
+  /* Fiche de mot : hero qui passe à la ligne */
+  .drawer-hero{gap:14px}
+  .block{padding:15px 15px}
+  /* Roadmap : boutons pleine largeur pour de bonnes cibles tactiles */
+  .rm-actions .btn{width:100%}
+}
+@media(max-width:400px){
+  header.topbar > form .pill{font-size:11px;padding:6px 9px}
+  .rm-step{grid-template-columns:34px 1fr;gap:12px}
+  .rm-node{width:34px;height:34px;font-size:16px}
+  .rm-step:not(:last-child)::before{left:16px;top:38px}
+}

@@ -8,17 +8,20 @@ export default async function VocabPage({ searchParams }: { searchParams: Promis
   const { level } = await searchParams;
   const active = JLPT_LEVELS.includes(level as JlptLevel) ? (level as JlptLevel) : undefined;
   const db = await createClient();
-  const items = await contentService.listVocab(db, active);
+  const [items, byLesson] = await Promise.all([
+    contentService.listVocab(db, active),
+    contentService.listVocabByLesson(db, active),
+  ]);
 
   return (
     <>
       <div className="page-head">
         <span className="pill-tag">Vocabulaire</span>
         <h1>Mots & caractères</h1>
-        <p>Touche un mot pour ouvrir sa fiche détaillée, ou passe en mode révision pour t&apos;entraîner avec la répétition espacée.</p>
+        <p>Touche un mot pour ouvrir sa fiche détaillée. Choisis d&apos;afficher les mots par liste ou regroupés par leçon.</p>
       </div>
       <LevelTabs base="/vocab" active={active} />
-      <VocabBrowser items={items} />
+      <VocabBrowser items={items} byLesson={byLesson} />
     </>
   );
 }

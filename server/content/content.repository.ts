@@ -18,6 +18,13 @@ export const contentRepository = {
     return data;
   },
 
+  /** Vocabulaire d'une leçon du plan : slugs préfixés par le code (ex. "V-N5-01-001"). */
+  async listVocabByCode(db: DB, code: string) {
+    const { data, error } = await db.from("vocab_items").select("*").like("slug", `${code}-%`).order("slug");
+    if (error) throw error;
+    return data ?? [];
+  },
+
   async listPhrases(db: DB, level?: JlptLevel) {
     let q = db.from("phrases").select("*").order("position");
     if (level) q = q.eq("level", level);

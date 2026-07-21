@@ -43,9 +43,30 @@ export type PhraseRow = Timestamps & {
   lemma: string; reading: string | null; gloss: string; position: number;
 }
 
+// Leçon détaillée optionnelle attachée à un point de grammaire (rendue par GrammarDrawer).
+export type GrammarContent = {
+  formula?: string;                                  // ex. « V-ないでください »
+  intro?: string;
+  formation?: {
+    intro?: string;
+    rows: Array<{ group: string; verb: string; form: string; meaning: string }>;
+  };
+  rules?: Array<{ label: string; text: string }>;
+  breakdown?: { steps: Array<{ jp: string; romaji: string; fr: string }> };
+  note?: string;                                     // point essentiel
+  compare?: Array<{ type: "aff" | "neg"; jp: string; fr: string }>;
+  examples?: Array<{ jp: string; fr: string }>;
+  softener?: { text: string; example: { jp: string; fr: string } };
+  mistakes?: Array<{ ok: boolean; form: string; note: string }>;
+  without?: string;                                  // ～ないで sans ください
+  summary?: string;                                  // à retenir
+  sources?: string[];
+};
+
 export type GrammarPointRow = Timestamps & {
   id: string; slug: string; level: JlptLevel;
-  lemma: string; gloss: string; detail: string | null; position: number;
+  lemma: string; gloss: string; detail: string | null;
+  content: GrammarContent | null; position: number;
 }
 
 export type GrammarQuestionRow = {

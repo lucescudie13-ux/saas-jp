@@ -32,4 +32,16 @@ export interface ListQuery {
   level?: JlptLevel;
 }
 
+/** Vocabulaire regroupé par leçon (pour l'affichage « trier par leçon »). */
+export interface VocabLessonGroup {
+  lesson: LessonRow;
+  vocab: VocabItemRow[];
+}
+export interface VocabByLesson {
+  /** Groupes de vocabulaire rattachés à une leçon, dans l'ordre des leçons. */
+  groups: VocabLessonGroup[];
+  /** Mots du niveau non rattachés à une leçon. */
+  ungrouped: VocabItemRow[];
+}
+
 export type ContentKind = ItemKind;

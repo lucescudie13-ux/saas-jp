@@ -1,44 +1,28 @@
 import Link from "next/link";
 import type { Route } from "next";
-import { createClient } from "@/lib/supabase/server";
-import { contentService } from "@/server/content/content.service";
-import { JLPT_LEVELS, LEVEL_LABELS } from "@/lib/constants";
+import { PlanCurriculum } from "@/components/features/PlanCurriculum";
 
-export default async function PlanPage() {
-  const db = await createClient();
-  const lessons = await contentService.listLessons(db);
-
+export default function PlanPage() {
   return (
     <>
       <div className="page-head">
         <span className="pill-tag">Plan d&apos;étude</span>
         <h1>Du N5 au N1</h1>
-        <p>Ta progression niveau par niveau. Déplie un niveau pour accéder à ses leçons.</p>
+        <p>
+          Chaque niveau est découpé en leçons de vocabulaire, de grammaire et de conjugaison. Choisis une leçon,
+          fais-la, valide-la — sa case devient verte.
+        </p>
       </div>
 
-      {JLPT_LEVELS.map((lv) => {
-        const ls = lessons.filter((l) => l.level === lv).sort((a, b) => a.number - b.number);
-        return (
-          <details key={lv} className="plan-level" open={lv === "N5"}>
-            <summary>
-              <span className="lvl-tag">{lv}</span>
-              {LEVEL_LABELS[lv]}
-              <span className="lvl-sub" style={{ marginLeft: "auto" }}>{ls.length} leçon{ls.length > 1 ? "s" : ""}</span>
-            </summary>
-            {ls.length === 0 ? (
-              <p className="empty" style={{ marginTop: 12 }}>Aucune leçon. Ajoute-en dans <code>lessons</code>.</p>
-            ) : (
-              <div className="lessons-row">
-                {ls.map((l) => (
-                  <Link key={l.id} className="lesson-cell" href={`/lesson/${l.level}/${l.number}` as Route} title={l.title}>
-                    {l.number}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </details>
-        );
-      })}
+      <Link href={"/plan/modele" as Route} className="lesson-cta plan-model-link">
+        <div className="lesson-cta-text">
+          <h3>À quoi ressemble une leçon ?</h3>
+          <p>Découvre la structure type d&apos;une leçon — apprentissage puis exercices.</p>
+        </div>
+        <span className="btn primary lesson-cta-btn">Voir le modèle →</span>
+      </Link>
+
+      <PlanCurriculum />
     </>
   );
 }
