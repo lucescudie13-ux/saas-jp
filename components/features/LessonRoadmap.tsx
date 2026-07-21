@@ -68,10 +68,10 @@ export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExer
           if (m.track === "vocab") {
             return <VocabModule key={m.lesson.code} m={m} words={vocab} done={done} onToggle={() => toggle(m.lesson.code)} />;
           }
-          if (m.track === "grammar" && grammar.length > 0) {
+          if (m.track === "grammar" && (grammar.length > 0 || grammarExercises.length > 0)) {
             return <PointsModule key={m.lesson.code} m={m} rules={grammar} exercises={grammarExercises} done={done} onToggle={() => toggle(m.lesson.code)} onValidate={() => validate(m.lesson.code)} />;
           }
-          if (m.track === "conjugation" && conjugation.length > 0) {
+          if (m.track === "conjugation" && (conjugation.length > 0 || conjExercises.length > 0)) {
             return <PointsModule key={m.lesson.code} m={m} rules={conjugation} exercises={conjExercises} done={done} onToggle={() => toggle(m.lesson.code)} onValidate={() => validate(m.lesson.code)} />;
           }
           return (
@@ -202,18 +202,24 @@ function PointsModule({ m, rules, exercises, done, onToggle, onValidate }: {
         </div>
         <span className={`rm-status ${done ? "s-done" : "s-available"}`}>{done ? "Validé" : "À faire"}</span>
       </div>
-      <p className="lr-mod-note">{rules.length} point{rules.length > 1 ? "s" : ""} · touche un point pour lire le cours.</p>
-      <ul className="lm-plist" style={{ marginBottom: 12 }}>
-        {rules.map((r, i) => (
-          <li key={i} className="lm-prow" onClick={() => setDetail({ title: r.title, node: <GrammarRuleView rule={r} /> })}>
-            <span className="lm-prow-main">
-              <span className="lm-prow-title">{r.title}</span>
-              {r.formula && <span className="lm-prow-desc">{r.formula}</span>}
-            </span>
-            <span className="lm-prow-ar" aria-hidden>›</span>
-          </li>
-        ))}
-      </ul>
+      <p className="lr-mod-note">
+        {rules.length > 0
+          ? `${rules.length} point${rules.length > 1 ? "s" : ""} · touche un point pour lire le cours.`
+          : "Exercices de traduction pour cette leçon."}
+      </p>
+      {rules.length > 0 && (
+        <ul className="lm-plist" style={{ marginBottom: 12 }}>
+          {rules.map((r, i) => (
+            <li key={i} className="lm-prow" onClick={() => setDetail({ title: r.title, node: <GrammarRuleView rule={r} /> })}>
+              <span className="lm-prow-main">
+                <span className="lm-prow-title">{r.title}</span>
+                {r.formula && <span className="lm-prow-desc">{r.formula}</span>}
+              </span>
+              <span className="lm-prow-ar" aria-hidden>›</span>
+            </li>
+          ))}
+        </ul>
+      )}
 
       {hasEx ? (
         <div className="lr-mod-actions">

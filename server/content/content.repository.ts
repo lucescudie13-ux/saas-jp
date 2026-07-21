@@ -1,6 +1,9 @@
 import type { Database, JlptLevel } from "@/types/database.types";
 
 import type { SupabaseDB as DB } from "@/lib/supabase/db";
+import type { GrammarRule } from "@/lib/grammar-content";
+import type { ExItem } from "@/lib/exercise-content";
+import type { Comprehension } from "@/lib/comprehension-content";
 
 /** Accès Supabase au contenu pédagogique (lecture). */
 export const contentRepository = {
@@ -23,6 +26,41 @@ export const contentRepository = {
     const { data, error } = await db.from("vocab_items").select("*").like("slug", `${code}-%`).order("slug");
     if (error) throw error;
     return data ?? [];
+  },
+
+  /** Cours (points de grammaire / conjugaison) d'une leçon — stocké dans grammar_points.detail (JSON). */
+  async getLessonCourse(db: DB, code: string): Promise<GrammarRule[]> {
+    const { data, error } = await db.from("grammar_points").select("detail").eq("slug", code).maybeSingle();
+    if (error) throw error;
+    if (!data?.detail) return [];
+    try {
+      return (JSON.parse(data.detail) as { rules?: GrammarRule[] }).rules ?? [];
+    } catch {
+      return [];
+    }
+  },
+
+  /** Exercices de traduction d'une leçon (paires JP→FR, réutilisées dans les deux sens). */
+  async getLessonExercises(db: DB, code: string): Promise<ExItem[]> {
+    const { data: gp, error: e1 } = await db.from("grammar_points").select("id").eq("slug", code).maybeSingle();
+    if (e1) throw e1;
+    if (!gp) return [];
+    const { data, error } = await db.from("grammar_questions")
+      .select("prompt,answer,position").eq("grammar_id", gp.id).eq("direction", "JP_FR").order("position");
+    if (error) throw error;
+    return (data ?? []).map((q) => ({ jp: q.prompt, answer: q.answer }));
+  },
+
+  /** Compréhension écrite d'une leçon (clé = code de vocabulaire). */
+  async getComprehensionByCode(db: DB, code: string): Promise<Comprehension | null> {
+    const { data: r, error: e1 } = await db.from("readings").select("id,title,body").eq("slug", code).maybeSingle();
+    if (e1) throw e1;
+    if (!r) return null;
+    const { data, error } = await db.from("reading_questions")
+      .select("prompt,answer,position").eq("reading_id", r.id).order("position");
+    if (error) throw error;
+    const qs = data ?? [];
+    return { title: r.title, text: r.body, questions: qs.map((q) => q.prompt), answers: qs.map((q) => q.answer), targetWords: [] };
   },
 
   async listPhrases(db: DB, level?: JlptLevel) {

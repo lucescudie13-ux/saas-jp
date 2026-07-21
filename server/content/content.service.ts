@@ -12,6 +12,9 @@ export const contentService = {
   listVocab: (db: DB, level?: JlptLevel) => contentRepository.listVocab(db, level),
   getVocab: (db: DB, id: string) => contentRepository.getVocab(db, id),
   listVocabByCode: (db: DB, code: string) => contentRepository.listVocabByCode(db, code),
+  getLessonCourse: (db: DB, code: string) => contentRepository.getLessonCourse(db, code),
+  getLessonExercises: (db: DB, code: string) => contentRepository.getLessonExercises(db, code),
+  getComprehensionByCode: (db: DB, code: string) => contentRepository.getComprehensionByCode(db, code),
 
   /**
    * Vocabulaire d'un niveau regroupé par leçon (dans l'ordre des leçons),

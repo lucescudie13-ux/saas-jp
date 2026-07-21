@@ -3,10 +3,6 @@ import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { JLPT_LEVELS, type JlptLevel } from "@/lib/constants";
 import { getCombinedLesson } from "@/lib/curriculum";
-import { getGrammarRules } from "@/lib/grammar-content";
-import { getConjugationRules } from "@/lib/conjugation-content";
-import { getGrammarExercises, getConjExercises } from "@/lib/exercise-content";
-import { getComprehension } from "@/lib/comprehension-content";
 import { LessonRoadmap } from "@/components/features/LessonRoadmap";
 import { createClient } from "@/lib/supabase/server";
 import { contentService } from "@/server/content/content.service";
@@ -23,12 +19,14 @@ export default async function LeconPage({ params }: { params: Promise<{ level: s
   const grammarMod = lesson.modules.find((m) => m.track === "grammar");
   const conjMod = lesson.modules.find((m) => m.track === "conjugation");
   const db = await createClient();
-  const vocab = vocabMod ? await contentService.listVocabByCode(db, vocabMod.lesson.code) : [];
-  const grammar = grammarMod ? getGrammarRules(lesson.level, grammarMod.lesson.code) : [];
-  const conjugation = conjMod ? getConjugationRules(lesson.level, conjMod.lesson.code) : [];
-  const grammarExercises = grammarMod ? getGrammarExercises(lesson.level, grammarMod.lesson.code) : [];
-  const conjExercises = conjMod ? getConjExercises(lesson.level, conjMod.lesson.code) : [];
-  const comprehension = vocabMod ? getComprehension(lesson.level, vocabMod.lesson.code) : null;
+  const [vocab, grammar, conjugation, grammarExercises, conjExercises, comprehension] = await Promise.all([
+    vocabMod ? contentService.listVocabByCode(db, vocabMod.lesson.code) : Promise.resolve([]),
+    grammarMod ? contentService.getLessonCourse(db, grammarMod.lesson.code) : Promise.resolve([]),
+    conjMod ? contentService.getLessonCourse(db, conjMod.lesson.code) : Promise.resolve([]),
+    grammarMod ? contentService.getLessonExercises(db, grammarMod.lesson.code) : Promise.resolve([]),
+    conjMod ? contentService.getLessonExercises(db, conjMod.lesson.code) : Promise.resolve([]),
+    vocabMod ? contentService.getComprehensionByCode(db, vocabMod.lesson.code) : Promise.resolve(null),
+  ]);
 
   return (
     <>
