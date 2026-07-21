@@ -1355,6 +1355,25 @@
 .cur-title{font-size:16px;font-weight:800;color:var(--ink)}
 @media(max-width:560px){.cur-grid{grid-template-columns:repeat(auto-fill,48px);gap:8px}.cur-cell{font-size:14px}}
 
+/* ---- Plan d'étude : deux plans ---- */
+.plan-section{margin-bottom:38px}
+.plan-section:last-child{margin-bottom:0}
+.plan-section-head{margin-bottom:16px}
+.plan-section-eyebrow{display:inline-block;font-family:var(--sans);font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:800;color:var(--vermilion);margin-bottom:6px}
+.plan-section-title{font-size:22px;font-weight:800;letter-spacing:-.3px;color:var(--ink);margin:0 0 6px}
+.plan-section-sub{color:var(--ink-soft);font-size:14px;max-width:60ch;margin:0}
+.founda-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.founda-card{display:flex;align-items:center;gap:15px;padding:15px 18px;text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s,transform .12s}
+.founda-card:hover{border-color:var(--vermilion);box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.founda-card:active{transform:translateY(0)}
+.founda-num{flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:var(--vermilion-soft);color:var(--vermilion-deep);font-family:var(--sans);font-weight:800;font-size:15px}
+.founda-body{display:flex;flex-direction:column;gap:3px;min-width:0}
+.founda-title{font-family:var(--sans);font-weight:800;font-size:15px;letter-spacing:-.2px;color:var(--ink)}
+.founda-sum{color:var(--ink-soft);font-size:13px;line-height:1.45}
+.founda-ar{flex:none;color:var(--ink-faint);font-size:18px;font-weight:700;transition:color .15s,transform .15s}
+.founda-card:hover .founda-ar{color:var(--vermilion);transform:translateX(3px)}
+@media(max-width:560px){.plan-section-title{font-size:19px}.founda-card{padding:13px 14px;gap:12px}.founda-ar{display:none}}
+
 /* Leçon combinée : modules d'apprentissage */
 .lr{display:flex;flex-direction:column}
 .lr-modules{display:flex;flex-direction:column;gap:12px}

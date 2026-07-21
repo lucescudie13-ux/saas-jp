@@ -14,12 +14,12 @@ const MAIN: Item[] = [
   { href: "/vrac" as Route, label: "Vrac", icon: "💡" },
 ];
 
+// Compréhension et Dialogues ne sont plus des entrées à part : ils vivent
+// désormais à l'intérieur des leçons (Plan d'étude), inutile de les répéter ici.
 const LEARN: Item[] = [
   { href: "/vocab", label: "Vocabulaire", icon: "語", jp: true },
   { href: "/phrases", label: "Phrases utiles", icon: "💬" },
   { href: "/grammar", label: "Grammaire", icon: "文", jp: true },
-  { href: "/dialogue", label: "Dialogues", icon: "🎭" },
-  { href: "/reading", label: "Compréhension", icon: "📖" },
 ];
 
 const TOOLS: { label: string; href: Route }[] = [
@@ -63,10 +63,9 @@ export function Sidebar({ level }: { level: JlptLevel }) {
           <NavLink key={it.href} item={{ ...it, badge: it.href === "/vocab" ? level : undefined }} active={isActive(it.href)} onClick={() => setMobileOpen(false)} />
         ))}
 
-        <div className="nav-label">Outils IA</div>
         <div className={`nav-group ${toolsOpen ? "open" : ""}`}>
           <button className="nav-item parent" onClick={() => setToolsOpen((o) => !o)}>
-            <span className="nav-icon">✨</span> Assistants
+            <span className="nav-icon">✨</span> Outils IA
             <span className="nav-caret">▶</span>
           </button>
           <div className="nav-sub">
