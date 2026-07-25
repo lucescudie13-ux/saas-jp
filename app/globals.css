@@ -778,12 +778,21 @@
 
   .row-between{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:-2px}
   .check{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-soft);cursor:pointer;user-select:none}
+  /* Neutralise le badge circulaire « .check » du vocabulaire (26px) qui fuitait
+     sur les cases des formulaires d'auth (libellé écrasé en colonne de 26px). */
+  .form .check{width:auto;height:auto;border:none;border-radius:0;background:none}
   .check input{width:17px;height:17px;accent-color:var(--vermilion);cursor:pointer;flex:none}
   .row-between .check{white-space:nowrap}
   .check.terms{align-items:flex-start;line-height:1.5}
   .check.terms input{margin-top:2px}
   .check a{color:var(--vermilion-deep);font-weight:600;text-decoration:none}
   .check a:hover{text-decoration:underline}
+  .confirm-screen{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:10px 4px 4px}
+  .confirm-ic{font-size:46px;line-height:1}
+  .confirm-screen h1{font-size:1.35rem;margin:0}
+  .confirm-screen p{color:var(--ink-soft);line-height:1.6;margin:0;font-size:.95rem}
+  .confirm-screen .btn{margin-top:6px;width:100%}
+  .confirm-hint{font-size:.85rem;opacity:.85}
   .link{font-size:13px;color:var(--vermilion-deep);font-weight:700;text-decoration:none}
   .link:hover{text-decoration:underline}
 

@@ -15,6 +15,7 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
   const [loading, setLoading] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [confirmEmail, setConfirmEmail] = useState<string | null>(null);
 
   // Origine pour les redirections (confirmation e-mail, OAuth). On retombe sur
   // l'origine du navigateur si NEXT_PUBLIC_APP_URL n'est pas défini → jamais cassé.
@@ -46,8 +47,9 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
     e.preventDefault();
     setLoading(true); setError(null); setNote(null);
     const fd = new FormData(e.currentTarget);
+    const email = String(fd.get("email")).trim();
     const { data, error } = await supabase.auth.signUp({
-      email: String(fd.get("email")),
+      email,
       password: String(fd.get("password")),
       options: {
         data: { display_name: String(fd.get("display_name")) },
@@ -55,15 +57,36 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
       },
     });
     setLoading(false);
-    if (error) { setError(error.message); return; }
-    // Confirmation e-mail désactivée → une session existe déjà : on entre dans l'app.
-    if (data.session) {
-      router.push("/plan");
-      router.refresh();
+
+    if (error) {
+      setError(
+        /already registered|already exists/i.test(error.message)
+          ? "Un compte existe déjà avec cet e-mail. Connecte-toi plutôt."
+          : error.message
+      );
       return;
     }
-    // Confirmation e-mail activée → pas de session : il faut valider par e-mail.
-    setNote("Compte créé ✓ Vérifie ta boîte mail pour confirmer ton adresse, puis connecte-toi.");
+
+    // Quand la confirmation e-mail est active, Supabase masque les doublons :
+    // il renvoie un utilisateur sans identité. On invite alors à se connecter.
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      setNote("Un compte existe déjà avec cet e-mail. Connecte-toi plutôt.");
+      setTab("login");
+      return;
+    }
+
+    // Confirmation e-mail active (recommandé) → aucune session : on affiche l'écran
+    // « vérifie ta boîte mail ». Le compte s'active en cliquant le lien reçu.
+    if (!data.session) {
+      setConfirmEmail(email);
+      return;
+    }
+
+    // Confirmation désactivée → Supabase ouvre une session tout de suite. On ne veut
+    // PAS entrer directement dans l'app : on ferme la session et on demande une vraie
+    // connexion. (Active « Confirm email » dans Supabase pour l'écran de confirmation.)
+    await supabase.auth.signOut();
+    setNote("Compte créé ✓ Connecte-toi avec ton e-mail et ton mot de passe pour commencer.");
     setTab("login");
   }
 
@@ -75,6 +98,16 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
         <div><b>日々 Hibi</b><br /><span>Jour après jour</span></div>
       </div>
 
+      {confirmEmail ? (
+        <div className="confirm-screen">
+          <div className="confirm-ic" aria-hidden>📬</div>
+          <h1>Vérifie ta boîte mail</h1>
+          <p>On vient d&apos;envoyer un lien de confirmation à <b>{confirmEmail}</b>. Clique dessus pour activer ton compte, puis connecte-toi.</p>
+          <button className="btn primary" onClick={() => { setConfirmEmail(null); setNote(null); setTab("login"); }}>Retour à la connexion</button>
+          <p className="confirm-hint">Rien reçu ? Vérifie tes spams ou réessaie dans une minute.</p>
+        </div>
+      ) : (
+      <>
       <div className="tabs" role="tablist">
         <button className={`tab ${tab === "login" ? "active" : ""}`} onClick={() => setTab("login")}>Connexion</button>
         <button className={`tab ${tab === "signup" ? "active" : ""}`} onClick={() => setTab("signup")}>Créer un compte</button>
@@ -144,6 +177,8 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
           {tab === "login" ? "Crée-le en 30 secondes" : "Connecte-toi"}
         </button>
       </div>
+      </>
+      )}
     </div>
   );
 }
