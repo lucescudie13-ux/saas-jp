@@ -45,7 +45,8 @@ export function Sidebar({ level }: { level: JlptLevel }) {
       <button className="side-toggle" onClick={() => setMobileOpen((o) => !o)} aria-label="Menu">☰</button>
       <aside className={`sidebar ${mobileOpen ? "open" : ""}`}>
         <Link className="brand" href="/plan">
-          <div className="seal">日</div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-mark" src="/logo.webp" alt="Hibi" />
           <div className="brand-text"><b>日々 Hibi</b><span>Jour après jour</span></div>
         </Link>
 

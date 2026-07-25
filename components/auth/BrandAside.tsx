@@ -7,7 +7,8 @@ export function BrandAside() {
 
       <div className="aside-top">
         <a className="brand" href="/">
-          <div className="seal">日</div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="brand-mark" src="/logo.webp" alt="Hibi" />
           <div><b>日々 Hibi</b><span>Jour après jour</span></div>
         </a>
       </div>

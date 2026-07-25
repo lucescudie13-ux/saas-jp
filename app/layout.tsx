@@ -5,10 +5,7 @@ export const metadata: Metadata = {
   title: "日々 Hibi — Apprends le japonais, chaque jour",
   description:
     "Apprends le japonais jour après jour : parcours structuré par niveau JLPT (vocabulaire, grammaire, dialogues, compréhension) et révision intelligente.",
-  icons: {
-    icon:
-      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23C2402F'/%3E%3Ctext x='50' y='73' font-size='62' text-anchor='middle' fill='white' font-family='serif'%3E日%3C/text%3E%3C/svg%3E",
-  },
+  // Favicon : app/icon.png (le logo dragon) est détecté automatiquement par Next.
 };
 
 export const viewport: Viewport = { themeColor: "#C2402F" };

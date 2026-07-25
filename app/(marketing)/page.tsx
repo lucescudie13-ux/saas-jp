@@ -32,7 +32,7 @@ export default function Landing() {
     <div className="lp" id="top">
       <header className="lp-nav">
         <a className="lp-brand" href="#top">
-          <span className="lp-seal">日</span>
+          <img className="brand-mark" src="/logo.webp" alt="Hibi" />
           <span className="lp-brand-txt">日々 Hibi</span>
         </a>
         <nav className="lp-nav-links">
@@ -240,7 +240,7 @@ export default function Landing() {
       </section>
 
       <footer className="lp-footer">
-        <div className="lp-brand"><span className="lp-seal">日</span><span className="lp-brand-txt">日々 Hibi</span></div>
+        <div className="lp-brand"><img className="brand-mark" src="/logo.webp" alt="Hibi" /><span className="lp-brand-txt">日々 Hibi</span></div>
         <div className="lp-foot-links">
           <Link href="/login">Connexion</Link>
           <a href="#tarifs">Tarifs</a>

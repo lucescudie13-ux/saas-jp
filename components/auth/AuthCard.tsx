@@ -78,7 +78,8 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
   return (
     <div className="card">
       <div className="mini-brand">
-        <div className="seal">日</div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="brand-mark" src="/logo.webp" alt="Hibi" />
         <div><b>日々 Hibi</b><br /><span>Jour après jour</span></div>
       </div>
 
