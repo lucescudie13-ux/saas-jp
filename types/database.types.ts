@@ -159,6 +159,7 @@ export type Database = {
       user_preferences: Table<UserPreferencesRow>;
       user_item_progress: Table<UserItemProgressRow>;
       lesson_progress: Table<LessonProgressRow>;
+      user_lesson_codes: Table<{ user_id: string; code: string; created_at: string }>;
       study_sessions: Table<StudySessionRow>;
       sentence_submissions: Table<SentenceSubmissionRow>;
       subscriptions: Table<SubscriptionRow>;

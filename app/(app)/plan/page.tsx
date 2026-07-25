@@ -1,6 +1,15 @@
+import { createClient } from "@/lib/supabase/server";
+import { userService } from "@/server/users/user.service";
+import { subscriptionService } from "@/server/subscriptions/subscription.service";
 import { LessonPath } from "@/components/features/LessonPath";
 
-export default function PlanPage() {
+export default async function PlanPage() {
+  const db = await createClient();
+  const current = await userService.getCurrentUser(db);
+  const premium = current
+    ? (await subscriptionService.getStatus(db, current.id).catch(() => null))?.isPro ?? false
+    : false;
+
   return (
     <>
       <div className="page-head">
@@ -12,7 +21,7 @@ export default function PlanPage() {
         </p>
       </div>
 
-      <LessonPath />
+      <LessonPath premium={premium} />
     </>
   );
 }

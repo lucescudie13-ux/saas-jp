@@ -8,6 +8,7 @@ import { getLevelLessons } from "@/lib/curriculum";
 import { getValidated } from "@/lib/lesson-progress";
 import { computeDragon, type DragonStage } from "@/lib/dragon";
 import { MapViewport } from "./MapViewport";
+import { SubscribeButton } from "./SubscribeButton";
 
 /**
  * « La route du dragon » — une carte d'aventure par niveau JLPT, toutes
@@ -20,7 +21,8 @@ import { MapViewport } from "./MapViewport";
  */
 
 // Niveaux débloqués. À brancher plus tard sur l'abonnement de l'utilisateur.
-const UNLOCKED_LEVELS: JlptLevel[] = ["N5"];
+// N5 est toujours ouvert ; N4→N1 se débloquent avec l'abonnement Pro.
+const FREE_LEVEL: JlptLevel = "N5";
 
 type WP = { xs: number[]; ys: number[] };
 
@@ -86,7 +88,7 @@ function PathDragon({ stage }: { stage: DragonStage }) {
   );
 }
 
-export function LessonPath() {
+export function LessonPath({ premium = false }: { premium?: boolean }) {
   const [validated, setValidated] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -112,7 +114,7 @@ export function LessonPath() {
   return (
     <div className="levels">
       {JLPT_LEVELS.map((lv) => {
-        const unlocked = UNLOCKED_LEVELS.includes(lv);
+        const unlocked = premium || lv === FREE_LEVEL;
         const lessons = getLevelLessons(lv);
         const total = lessons.length;
         const wp = LEVEL_WP[lv];
@@ -172,7 +174,7 @@ export function LessonPath() {
                     <span className="map-lock-ic" aria-hidden>🔒</span>
                     <div className="map-lock-title">Niveau {lv} · {LEVEL_LABELS[lv]}</div>
                     <p>Débloque ce niveau pour ouvrir sa route et faire évoluer ton dragon.</p>
-                    <Link href={"/profile" as Route} className="btn map-lock-cta">Débloquer {lv} →</Link>
+                    <SubscribeButton label={`Débloquer ${lv} →`} className="btn map-lock-cta" />
                   </div>
                 </div>
               </div>

@@ -6,6 +6,7 @@ import { userService } from "@/server/users/user.service";
 import { statsService } from "@/server/stats/stats.service";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
+import { ProgressSync } from "@/components/features/ProgressSync";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const db = await createClient();
@@ -17,6 +18,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="app">
+      <ProgressSync />
       <Sidebar level={current.profile?.current_level ?? "N5"} />
       <div className="content">
         <Topbar
