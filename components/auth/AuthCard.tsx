@@ -16,7 +16,9 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+  // Origine pour les redirections (confirmation e-mail, OAuth). On retombe sur
+  // l'origine du navigateur si NEXT_PUBLIC_APP_URL n'est pas défini → jamais cassé.
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : "");
 
   function onPwInput(v: string) {
     let s = 0;
@@ -44,7 +46,7 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
     e.preventDefault();
     setLoading(true); setError(null); setNote(null);
     const fd = new FormData(e.currentTarget);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: String(fd.get("email")),
       password: String(fd.get("password")),
       options: {
@@ -54,7 +56,14 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
     });
     setLoading(false);
     if (error) { setError(error.message); return; }
-    setNote("Compte créé. Vérifie ta boîte mail pour confirmer ton adresse, puis connecte-toi.");
+    // Confirmation e-mail désactivée → une session existe déjà : on entre dans l'app.
+    if (data.session) {
+      router.push("/plan");
+      router.refresh();
+      return;
+    }
+    // Confirmation e-mail activée → pas de session : il faut valider par e-mail.
+    setNote("Compte créé ✓ Vérifie ta boîte mail pour confirmer ton adresse, puis connecte-toi.");
     setTab("login");
   }
 
