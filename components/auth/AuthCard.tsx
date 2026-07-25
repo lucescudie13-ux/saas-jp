@@ -67,14 +67,6 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
     setTab("login");
   }
 
-  async function oauth(provider: "google" | "apple") {
-    setError(null);
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: `${appUrl}/auth/callback` },
-    });
-  }
-
   return (
     <div className="card">
       <div className="mini-brand">
@@ -109,7 +101,6 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
             <a className="link" href="/forgot-password">Mot de passe oublié ?</a>
           </div>
           <button className="btn primary" type="submit" disabled={loading}>{loading ? "Connexion…" : "Se connecter →"}</button>
-          <OAuthRow onClick={oauth} label="ou continuer avec" />
           {error && <div className="note show" style={{ borderColor: "var(--vermilion)" }}><b>{error}</b></div>}
           {note && <div className="note show">{note}</div>}
         </form>
@@ -139,10 +130,9 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
           </div>
           <label className="check terms">
             <input type="checkbox" name="terms" required />
-            <span>J&apos;accepte les <a href="#">Conditions d&apos;utilisation</a> et la <a href="#">Politique de confidentialité</a>.</span>
+            <span>J&apos;accepte les <a href="/conditions" target="_blank" rel="noopener noreferrer">Conditions d&apos;utilisation</a> et la <a href="/confidentialite" target="_blank" rel="noopener noreferrer">Politique de confidentialité</a>.</span>
           </label>
           <button className="btn primary" type="submit" disabled={loading}>{loading ? "Création…" : "Créer mon compte →"}</button>
-          <OAuthRow onClick={oauth} label="ou s'inscrire avec" />
           {error && <div className="note show" style={{ borderColor: "var(--vermilion)" }}><b>{error}</b></div>}
           {note && <div className="note show">{note}</div>}
         </form>
@@ -155,17 +145,5 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
         </button>
       </div>
     </div>
-  );
-}
-
-function OAuthRow({ onClick, label }: { onClick: (p: "google" | "apple") => void; label: string }) {
-  return (
-    <>
-      <div className="divider">{label}</div>
-      <div className="oauth-row">
-        <button type="button" className="btn oauth" onClick={() => onClick("google")}>Google</button>
-        <button type="button" className="btn oauth" onClick={() => onClick("apple")}>Apple</button>
-      </div>
-    </>
   );
 }

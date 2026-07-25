@@ -1007,6 +1007,28 @@
 /* Marque : le logo dragon (remplace le sceau « 日 »). */
 .brand-mark{width:36px;height:36px;border-radius:10px;object-fit:cover;flex:none;box-shadow:0 3px 10px rgba(34,32,29,.16)}
 
+/* Pages légales (mentions légales, CGU/CGV, confidentialité). */
+.legal-page{min-height:100dvh;background:var(--paper);color:var(--ink);font-family:var(--sans);display:flex;flex-direction:column}
+.legal-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px;border-bottom:1px solid rgba(34,32,29,.10);max-width:1100px;width:100%;margin:0 auto}
+.legal-brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--ink);text-decoration:none}
+.legal-back{color:var(--ink-soft);text-decoration:none;font-size:.92rem}
+.legal-back:hover{color:var(--vermilion)}
+.legal{max-width:760px;width:100%;margin:0 auto;padding:40px 24px 64px;flex:1;text-align:left}
+.legal h1{font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.15;margin:0 0 6px}
+.legal-updated{color:var(--ink-soft);font-size:.9rem;margin:0 0 32px}
+.legal h2{font-size:1.15rem;margin:34px 0 10px;color:var(--ink)}
+.legal p,.legal li{color:var(--ink-soft);line-height:1.7;font-size:1rem}
+.legal p{margin:0 0 12px}
+.legal ul{margin:0 0 12px;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.legal a{color:var(--vermilion);text-decoration:underline;text-underline-offset:2px}
+.legal strong{color:var(--ink)}
+.legal .todo{background:#FFF1B8;color:#7a5b00;border-radius:4px;padding:1px 6px;font-size:.9em;font-weight:600}
+.legal-foot{display:flex;flex-wrap:wrap;align-items:center;gap:18px;padding:22px 24px;border-top:1px solid rgba(34,32,29,.10);max-width:1100px;width:100%;margin:0 auto;font-size:.9rem}
+.legal-foot a{color:var(--ink-soft);text-decoration:none}
+.legal-foot a:hover{color:var(--vermilion)}
+.legal-foot-copy{color:var(--ink-soft);margin-left:auto}
+@media(max-width:520px){.legal-foot-copy{margin-left:0;width:100%}}
+
 .lp{background:var(--paper);color:var(--ink);font-family:var(--sans);overflow-x:hidden}
 .lp .btn{width:auto}
 .lp a{color:inherit}

@@ -244,7 +244,9 @@ export default function Landing() {
         <div className="lp-foot-links">
           <Link href="/login">Connexion</Link>
           <a href="#tarifs">Tarifs</a>
-          <a href="#methode">La méthode</a>
+          <Link href="/conditions">Conditions</Link>
+          <Link href="/confidentialite">Confidentialité</Link>
+          <Link href="/mentions-legales">Mentions légales</Link>
         </div>
         <span className="lp-foot-copy">© 2026 Hibi · Apprends le japonais, jour après jour.</span>
       </footer>

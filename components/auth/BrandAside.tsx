@@ -27,8 +27,9 @@ export function BrandAside() {
 
       <div className="aside-bot">
         <span>© 2026 日々 Hibi</span>
-        <a href="#">Conditions</a>
-        <a href="#">Confidentialité</a>
+        <a href="/conditions">Conditions</a>
+        <a href="/confidentialite">Confidentialité</a>
+        <a href="/mentions-legales">Mentions légales</a>
       </div>
     </aside>
   );
