@@ -51,10 +51,10 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Connecté + page d'auth → redirection dashboard.
+  // Connecté + page d'auth → redirection vers l'accueil de l'app (le plan d'étude).
   if (user && (pathname === "/login" || pathname === "/signup")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = "/plan";
     return NextResponse.redirect(url);
   }
 

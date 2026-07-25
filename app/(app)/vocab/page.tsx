@@ -6,7 +6,7 @@ import { JLPT_LEVELS, type JlptLevel } from "@/lib/constants";
 
 export default async function VocabPage({ searchParams }: { searchParams: Promise<{ level?: string }> }) {
   const { level } = await searchParams;
-  const active = JLPT_LEVELS.includes(level as JlptLevel) ? (level as JlptLevel) : undefined;
+  const active = JLPT_LEVELS.includes(level as JlptLevel) ? (level as JlptLevel) : "N5";
   const db = await createClient();
   const [items, byLesson] = await Promise.all([
     contentService.listVocab(db, active),
@@ -18,7 +18,6 @@ export default async function VocabPage({ searchParams }: { searchParams: Promis
       <div className="page-head">
         <span className="pill-tag">Vocabulaire</span>
         <h1>Mots & caractères</h1>
-        <p>Touche un mot pour ouvrir sa fiche détaillée. Choisis d&apos;afficher les mots par liste ou regroupés par leçon.</p>
       </div>
       <LevelTabs base="/vocab" active={active} />
       <VocabBrowser items={items} byLesson={byLesson} />

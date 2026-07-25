@@ -12,7 +12,6 @@ export function LevelTabs({
 }) {
   return (
     <div className="tabs-jlpt">
-      <Link href={base as Route} className={`jtab ${!active ? "active" : ""}`}>Tous</Link>
       {JLPT_LEVELS.map((lv) => (
         <Link
           key={lv}

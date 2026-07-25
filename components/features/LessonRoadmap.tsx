@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { CombinedLesson, CombinedModule } from "@/lib/curriculum";
 import { TRACK_LABELS, TRACK_ICONS } from "@/lib/curriculum";
@@ -9,18 +9,21 @@ import type { ExItem } from "@/lib/exercise-content";
 import type { Comprehension } from "@/lib/comprehension-content";
 import type { VocabItemRow } from "@/types/database.types";
 import { VOCAB_TYPE_LABELS } from "@/lib/constants";
-import { VocabDrawer } from "./VocabDrawer";
-import { DetailDrawer } from "./DetailDrawer";
+import { Flashcards } from "./Flashcards";
+import { VocabFiche } from "./VocabFiche";
 import { GrammarRuleView } from "./GrammarRuleView";
 import { LessonExercise } from "./LessonExercise";
 import { ComprehensionView } from "./ComprehensionView";
+import { VerifyForm } from "@/components/forms/VerifyForm";
 import { getValidated, setValidated } from "@/lib/lesson-progress";
 
+type OpenView = (title: string, node: ReactNode) => void;
+
 const PART2 = [
-  { icon: "📖", title: "Compréhension écrite", desc: "Un texte reprenant le vocabulaire de la leçon, suivi de questions." },
-  { icon: "🎧", title: "Compréhension orale", desc: "Un dialogue audio reprenant le contenu de la leçon, suivi de questions." },
-  { icon: "✍️", title: "Expression écrite", desc: "Un sujet à rédiger, avec correction personnalisée." },
-  { icon: "🎤", title: "Expression orale", desc: "Un sujet à l'oral, avec correction personnalisée." },
+  { key: "comp-ecrite", icon: "📖", title: "Compréhension écrite", desc: "Un texte reprenant le vocabulaire de la leçon, suivi de questions." },
+  { key: "comp-orale", icon: "🎧", title: "Compréhension orale", desc: "Un dialogue audio reprenant le contenu de la leçon, suivi de questions." },
+  { key: "expr-ecrite", icon: "✍️", title: "Expression écrite", desc: "Un sujet à rédiger, avec correction personnalisée." },
+  { key: "expr-orale", icon: "🎤", title: "Expression orale", desc: "Un sujet à l'oral, avec correction personnalisée." },
 ];
 
 export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExercises, conjExercises, comprehension }: {
@@ -32,185 +35,220 @@ export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExer
   conjExercises: ExItem[];
   comprehension: Comprehension | null;
 }) {
-  const [validated, setV] = useState<Set<string>>(new Set());
-  const [compOpen, setCompOpen] = useState(false);
+  // Pile de vues plein écran : leçon → contenu du module → détail (mot / règle).
+  // Chaque ouverture empile une entrée d'historique, chaque « Retour » en dépile
+  // une — le bouton du navigateur revient donc au niveau précédent, pas à la liste.
+  const [stack, setStack] = useState<Array<{ title: string; node: ReactNode }>>([]);
+  const depthRef = useRef(0);
+  const [validated, setValidatedSet] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    setV(getValidated());
+    const refresh = () => setValidatedSet(getValidated());
+    refresh();
+    window.addEventListener("hibi-progress", refresh);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener("hibi-progress", refresh);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("storage", refresh);
+    };
   }, []);
 
-  function toggle(code: string) {
-    const done = !validated.has(code);
-    setV(new Set(setValidated(code, done)));
-  }
-  function validate(code: string) {
-    setV(new Set(setValidated(code, true)));
+  const markDone = (code: string) => setValidated(code, true);
+  const openView: OpenView = (title, node) => {
+    setStack((s) => [...s, { title, node }]);
+    depthRef.current += 1;
+    window.history.pushState({ ...window.history.state, lrView: true }, "");
+    window.scrollTo({ top: 0 });
+  };
+  const closeView = () => window.history.back();
+
+  useEffect(() => {
+    const onPop = () => {
+      if (depthRef.current > 0) {
+        depthRef.current -= 1;
+        setStack((s) => s.slice(0, -1));
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  // Modules sans contenu (rien à faire) : validés dès l'ouverture.
+  useEffect(() => {
+    lesson.modules
+      .filter((m) => {
+        if (m.track === "vocab") return vocab.length === 0;
+        if (m.track === "grammar") return grammar.length === 0 && grammarExercises.length === 0;
+        if (m.track === "conjugation") return conjugation.length === 0 && conjExercises.length === 0;
+        return true;
+      })
+      .forEach((m) => setValidated(m.lesson.code, true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ---- Vue plein écran (sommet de la pile) ----
+  if (stack.length > 0) {
+    const top = stack[stack.length - 1]!;
+    return (
+      <div className="lr-fullview">
+        <button className="vrac-back lr-fullview-back" onClick={closeView}>← Retour</button>
+        <h2 className="lr-fullview-title">{top.title}</h2>
+        {top.node}
+      </div>
+    );
   }
 
-  const doneCount = lesson.modules.filter((m) => validated.has(m.lesson.code)).length;
-  const allDone = lesson.modules.length > 0 && doneCount === lesson.modules.length;
+  // Contenu plein écran d'un module d'apprentissage.
+  const moduleContent = (m: CombinedModule): ReactNode => {
+    const onEngage = () => markDone(m.lesson.code);
+    if (m.track === "vocab") return <VocabContent m={m} words={vocab} onEngage={onEngage} openView={openView} />;
+    if (m.track === "grammar") return <PointsContent m={m} rules={grammar} exercises={grammarExercises} onEngage={onEngage} openView={openView} />;
+    if (m.track === "conjugation") return <PointsContent m={m} rules={conjugation} exercises={conjExercises} onEngage={onEngage} openView={openView} />;
+    return <p className="lr-mod-note">Contenu à venir.</p>;
+  };
 
   return (
     <div className="lr">
-      <div className="rm-part">
+      <section className="lr-part">
         <div className="rm-part-head">
           <span className="rm-part-eyebrow">Partie 1</span>
           <h2 className="rm-part-title">Apprentissage</h2>
         </div>
-        <span className={`rm-part-prog ${allDone ? "is-done" : ""}`}>
-          {allDone ? "Terminé ✓" : `${doneCount} / ${lesson.modules.length}`}
-        </span>
-      </div>
 
-      <div className="lr-modules">
-        {lesson.modules.map((m) => {
-          const done = validated.has(m.lesson.code);
-          if (m.track === "vocab") {
-            return <VocabModule key={m.lesson.code} m={m} words={vocab} done={done} onToggle={() => toggle(m.lesson.code)} />;
-          }
-          if (m.track === "grammar" && (grammar.length > 0 || grammarExercises.length > 0)) {
-            return <PointsModule key={m.lesson.code} m={m} rules={grammar} exercises={grammarExercises} done={done} onToggle={() => toggle(m.lesson.code)} onValidate={() => validate(m.lesson.code)} />;
-          }
-          if (m.track === "conjugation" && (conjugation.length > 0 || conjExercises.length > 0)) {
-            return <PointsModule key={m.lesson.code} m={m} rules={conjugation} exercises={conjExercises} done={done} onToggle={() => toggle(m.lesson.code)} onValidate={() => validate(m.lesson.code)} />;
-          }
-          return (
-            <div key={m.lesson.code} className={`lr-mod ${done ? "done" : ""}`}>
-              <div className="lr-mod-top">
-                <span className="lr-mod-ic" aria-hidden>{TRACK_ICONS[m.track]}</span>
-                <div className="lr-mod-titles">
-                  <span className="lr-mod-track">{TRACK_LABELS[m.track]}</span>
-                  <span className="lr-mod-title">{m.lesson.title}</span>
+        <div className="lr-modules">
+          {lesson.modules.map((m) => {
+            const done = validated.has(m.lesson.code);
+            return (
+              <button
+                key={m.lesson.code}
+                className={`lr-mod lr-mod-btn ${done ? "done" : ""}`}
+                onClick={() => openView(`${TRACK_LABELS[m.track]} · ${m.lesson.title}`, moduleContent(m))}
+              >
+                <div className="lr-mod-top">
+                  <span className="lr-mod-ic" aria-hidden>{TRACK_ICONS[m.track]}</span>
+                  <div className="lr-mod-titles">
+                    <span className="lr-mod-track">{TRACK_LABELS[m.track]}</span>
+                    <span className="lr-mod-title">{m.lesson.title}</span>
+                  </div>
+                  {done
+                    ? <span className="done-badge">Validé</span>
+                    : <span className="lr-mod-caret" aria-hidden>›</span>}
                 </div>
-                <span className={`rm-status ${done ? "s-done" : "s-available"}`}>{done ? "Validé" : "À faire"}</span>
-              </div>
-              <p className="lr-mod-note">Contenu à venir — {m.lesson.count} règles. <code>{m.lesson.code}</code></p>
-              <button className={`btn sm ${done ? "vlb-done" : "primary"}`} onClick={() => toggle(m.lesson.code)}>
-                {done ? "✓ Validé — annuler" : "Valider ce module ✓"}
               </button>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </section>
 
-      {/* ---- Partie 2 : exercices (en construction) ---- */}
-      <div className="rm-part lr-part2">
+      <section className="lr-part">
         <div className="rm-part-head">
           <span className="rm-part-eyebrow">Partie 2</span>
           <h2 className="rm-part-title">Exercices</h2>
         </div>
-        <span className="rm-soon">En construction</span>
-      </div>
-      <div className="lr-modules">
-        {PART2.map((ex) => {
-          if (ex.title === "Compréhension écrite" && comprehension) {
+
+        <div className="lr-modules">
+          {PART2.map((ex) => {
+            const code = `EX:${lesson.level}${lesson.num}:${ex.key}`;
+            const done = validated.has(code);
+            const real = ex.title === "Compréhension écrite" && comprehension;
+            const node = real ? <ComprehensionView c={comprehension} /> : <ExercisePlaceholder ex={ex} />;
             return (
-              <div key={ex.title} className="lr-mod">
+              <button
+                key={ex.key}
+                className={`lr-mod lr-mod-btn ${done ? "done" : ""}`}
+                onClick={() => { if (real) markDone(code); openView(ex.title, node); }}
+              >
                 <div className="lr-mod-top">
                   <span className="lr-mod-ic" aria-hidden>{ex.icon}</span>
                   <div className="lr-mod-titles">
                     <span className="lr-mod-track">Exercice</span>
                     <span className="lr-mod-title">{ex.title}</span>
                   </div>
-                  <span className="rm-status s-available">Disponible</span>
+                  {done
+                    ? <span className="done-badge">Validé</span>
+                    : <span className="lr-mod-caret" aria-hidden>›</span>}
                 </div>
-                <p className="lr-mod-note">Un texte reprenant le vocabulaire, suivi de {comprehension.questions.length} questions.</p>
-                <button className="btn primary sm" onClick={() => setCompOpen(true)}>Lire le texte et répondre →</button>
-              </div>
+              </button>
             );
-          }
-          return (
-            <div key={ex.title} className="lr-mod locked">
-              <div className="lr-mod-top">
-                <span className="lr-mod-ic" aria-hidden>{ex.icon}</span>
-                <div className="lr-mod-titles">
-                  <span className="lr-mod-track">Exercice</span>
-                  <span className="lr-mod-title">{ex.title}</span>
-                </div>
-                <span className="rm-status s-construction">🔒 Bientôt</span>
-              </div>
-              <p className="lr-mod-note">{ex.desc}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      <DetailDrawer open={compOpen} title="Compréhension écrite" onClose={() => setCompOpen(false)}>
-        {comprehension && <ComprehensionView c={comprehension} />}
-      </DetailDrawer>
-    </div>
-  );
-}
-
-function VocabModule({ m, words, done, onToggle }: { m: CombinedModule; words: VocabItemRow[]; done: boolean; onToggle: () => void }) {
-  const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<VocabItemRow | null>(null);
-  return (
-    <div className={`lr-mod ${done ? "done" : ""}`}>
-      <div className="lr-mod-top">
-        <span className="lr-mod-ic" aria-hidden>{TRACK_ICONS.vocab}</span>
-        <div className="lr-mod-titles">
-          <span className="lr-mod-track">{TRACK_LABELS.vocab}</span>
-          <span className="lr-mod-title">{m.lesson.title}</span>
+          })}
         </div>
-        <span className={`rm-status ${done ? "s-done" : "s-available"}`}>{done ? "Validé" : "À faire"}</span>
-      </div>
-      <p className="lr-mod-note">{words.length} mots · touche un mot pour sa fiche. <code>{m.lesson.code}</code></p>
-      <div className="lr-mod-actions">
-        <button className="btn ghost sm" onClick={() => setOpen((o) => !o)}>
-          {open ? "Masquer les mots" : `Voir les ${words.length} mots`}
-        </button>
-        <button className={`btn sm ${done ? "vlb-done" : "primary"}`} onClick={onToggle}>
-          {done ? "✓ Validé — annuler" : "Valider ce module ✓"}
-        </button>
-      </div>
-      {open && (
-        <ul className="vlist" style={{ marginTop: 14 }}>
-          {words.map((v) => (
-            <li key={v.id} className="vrow" onClick={() => setSelected(v)}>
-              <span className="vglyph">{v.lemma}</span>
-              <span className="vreading">{v.reading ?? ""}</span>
-              <span className="vgloss">{v.gloss}</span>
-              <span className="vtags"><span className="vtype">{VOCAB_TYPE_LABELS[v.type] ?? v.type}</span></span>
-            </li>
-          ))}
-        </ul>
-      )}
-      <VocabDrawer item={selected} onClose={() => setSelected(null)} />
+      </section>
     </div>
   );
 }
 
-function PointsModule({ m, rules, exercises, done, onToggle, onValidate }: {
+/** Exercice pas encore disponible — ouvert en plein écran (plus verrouillé). */
+function ExercisePlaceholder({ ex }: { ex: { icon: string; title: string; desc: string } }) {
+  return (
+    <div className="ex-soon">
+      <span className="ex-soon-ic" aria-hidden>{ex.icon}</span>
+      <p className="ex-soon-desc">{ex.desc}</p>
+      <span className="ex-soon-tag">Bientôt disponible</span>
+    </div>
+  );
+}
+
+/** Contenu plein écran du module vocabulaire : liste des mots + exercices. */
+function VocabContent({ m, words, onEngage, openView }: { m: CombinedModule; words: VocabItemRow[]; onEngage: () => void; openView: OpenView }) {
+  if (words.length === 0) return <p className="lr-mod-note">Contenu à venir — {m.lesson.count} mots.</p>;
+  const cards = words.map((v) => ({ id: v.id, front: v.lemma, sub: v.reading ?? undefined, back: v.gloss }));
+  return (
+    <div className="lr-modview">
+      <ul className="vlist">
+        {words.map((v, i) => (
+          <li
+            key={v.id}
+            className="vrow"
+            onClick={() => openView(`Vocabulaire · ${m.lesson.title}`, <VocabPager words={words} startIndex={i} />)}
+          >
+            <span className="vnum">{i + 1}</span>
+            <span className="vglyph">{v.lemma}</span>
+            <span className="vreading">{v.reading ?? ""}</span>
+            <span className="vgloss">{v.gloss}</span>
+            <span className="vtags"><span className="vtype">{VOCAB_TYPE_LABELS[v.type] ?? v.type}</span></span>
+          </li>
+        ))}
+      </ul>
+      <button
+        className="btn primary sm"
+        style={{ marginTop: 16 }}
+        onClick={() => openView(
+          `Exercices — ${m.lesson.title}`,
+          <>
+            <p className="lm-intro">Révise chaque mot, puis auto-évalue-toi. La leçon se valide en fin de session.</p>
+            <Flashcards kind="vocab" items={cards} onComplete={onEngage} />
+          </>,
+        )}
+      >
+        Faire les exercices ({words.length} cartes) →
+      </button>
+    </div>
+  );
+}
+
+/** Contenu plein écran d'un module grammaire / conjugaison : règles + exercices. */
+function PointsContent({ m, rules, exercises, onEngage, openView }: {
   m: CombinedModule;
   rules: GrammarRule[];
   exercises: ExItem[];
-  done: boolean;
-  onToggle: () => void;
-  onValidate: () => void;
+  onEngage: () => void;
+  openView: OpenView;
 }) {
-  const [detail, setDetail] = useState<{ title: string; node: ReactNode } | null>(null);
-  const [exOpen, setExOpen] = useState(false);
-  const hasEx = exercises.length > 0;
+  if (rules.length === 0 && exercises.length === 0) {
+    return <p className="lr-mod-note">Contenu à venir — {m.lesson.count} règles.</p>;
+  }
   return (
-    <div className={`lr-mod ${done ? "done" : ""}`}>
-      <div className="lr-mod-top">
-        <span className="lr-mod-ic" aria-hidden>{TRACK_ICONS[m.track]}</span>
-        <div className="lr-mod-titles">
-          <span className="lr-mod-track">{TRACK_LABELS[m.track]}</span>
-          <span className="lr-mod-title">{m.lesson.title}</span>
-        </div>
-        <span className={`rm-status ${done ? "s-done" : "s-available"}`}>{done ? "Validé" : "À faire"}</span>
-      </div>
-      <p className="lr-mod-note">
-        {rules.length > 0
-          ? `${rules.length} point${rules.length > 1 ? "s" : ""} · touche un point pour lire le cours.`
-          : "Exercices de traduction pour cette leçon."}
-      </p>
+    <div className="lr-modview">
       {rules.length > 0 && (
-        <ul className="lm-plist" style={{ marginBottom: 12 }}>
+        <ul className="lm-plist">
           {rules.map((r, i) => (
-            <li key={i} className="lm-prow" onClick={() => setDetail({ title: r.title, node: <GrammarRuleView rule={r} /> })}>
+            <li
+              key={i}
+              className="lm-prow"
+              onClick={() => { onEngage(); openView(r.title, <GrammarRuleView rule={r} />); }}
+            >
               <span className="lm-prow-main">
                 <span className="lm-prow-title">{r.title}</span>
                 {r.formula && <span className="lm-prow-desc">{r.formula}</span>}
@@ -220,27 +258,54 @@ function PointsModule({ m, rules, exercises, done, onToggle, onValidate }: {
           ))}
         </ul>
       )}
-
-      {hasEx ? (
-        <div className="lr-mod-actions">
-          <button className={`btn sm ${done ? "ghost" : "primary"}`} onClick={() => setExOpen(true)}>
-            {done ? "Refaire les exercices" : `Faire les exercices (${exercises.length * 2} questions) →`}
-          </button>
-          {done ? <span className="ex-validated">✓ Validé</span> : <span className="lr-mod-hint">Validé une fois les exercices terminés.</span>}
-        </div>
-      ) : (
-        <button className={`btn sm ${done ? "vlb-done" : "primary"}`} onClick={onToggle}>
-          {done ? "✓ Validé — annuler" : "Valider ce module ✓"}
+      {exercises.length > 0 && (
+        <button
+          className="btn primary sm"
+          style={{ marginTop: 16 }}
+          onClick={() => openView(
+            `Exercices — ${m.lesson.title}`,
+            <>
+              <p className="lm-intro">Traduis chaque phrase, compare avec le modèle, puis auto-évalue-toi.</p>
+              <LessonExercise items={exercises} onComplete={onEngage} />
+            </>,
+          )}
+        >
+          Faire les exercices ({exercises.length * 2} questions) →
         </button>
       )}
+    </div>
+  );
+}
 
-      <DetailDrawer open={detail !== null} title={detail?.title} onClose={() => setDetail(null)}>
-        {detail?.node}
-      </DetailDrawer>
-      <DetailDrawer open={exOpen} title={`Exercices — ${m.lesson.title}`} onClose={() => setExOpen(false)}>
-        <p className="lm-intro">Traduis chaque phrase, compare avec le modèle, puis auto-évalue-toi. Terminer un sens valide le module.</p>
-        <LessonExercise items={exercises} onComplete={onValidate} />
-      </DetailDrawer>
+/**
+ * Fiche vocabulaire en plein écran, avec navigation précédent / suivant
+ * (boutons ‹ › ou flèches clavier).
+ */
+function VocabPager({ words, startIndex }: { words: VocabItemRow[]; startIndex: number }) {
+  const [i, setI] = useState(startIndex);
+  const hasPrev = i > 0;
+  const hasNext = i < words.length - 1;
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "ArrowLeft" && i > 0) setI((n) => n - 1);
+      else if (e.key === "ArrowRight" && i < words.length - 1) setI((n) => n + 1);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [i, words.length]);
+
+  const v = words[i]!;
+  return (
+    <div className="vpager">
+      {words.length > 1 && (
+        <div className="vpager-nav">
+          <button className="vpager-btn" disabled={!hasPrev} onClick={() => setI(i - 1)}>‹ Précédent</button>
+          <span className="vpager-count">{i + 1} / {words.length}</span>
+          <button className="vpager-btn" disabled={!hasNext} onClick={() => setI(i + 1)}>Suivant ›</button>
+        </div>
+      )}
+      <VocabFiche key={v.id} item={v} verify={<VerifyForm kind="vocab" itemId={v.id} />} />
     </div>
   );
 }

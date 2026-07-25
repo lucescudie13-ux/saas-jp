@@ -33,11 +33,7 @@ export default async function LeconPage({ params }: { params: Promise<{ level: s
       <div className="page-head">
         <Link href={"/plan" as Route} className="vrac-back">← Plan d&apos;étude</Link>
         <span className="pill-tag">{lesson.level} · Leçon {lesson.num}</span>
-        <h1>Leçon {lesson.num}</h1>
-        <p>
-          {lesson.modules.length} module{lesson.modules.length > 1 ? "s" : ""} d&apos;apprentissage, puis les exercices.
-          Valide chaque module : la leçon devient verte quand tout est validé.
-        </p>
+        <h1>{vocabMod?.lesson.title ?? lesson.modules[0]?.lesson.title ?? `Leçon ${lesson.num}`}</h1>
       </div>
       <LessonRoadmap lesson={lesson} vocab={vocab} grammar={grammar} conjugation={conjugation} grammarExercises={grammarExercises} conjExercises={conjExercises} comprehension={comprehension} />
     </>

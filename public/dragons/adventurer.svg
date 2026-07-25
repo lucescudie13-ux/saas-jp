@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Dragon aventurier">
+  <defs>
+    <linearGradient id="ad-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#41548f"/><stop offset="1" stop-color="#26325f"/>
+    </linearGradient>
+    <linearGradient id="ad-belly" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6eed6"/><stop offset="1" stop-color="#e6d3a4"/>
+    </linearGradient>
+    <linearGradient id="ad-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0d992"/><stop offset="1" stop-color="#c99a3f"/>
+    </linearGradient>
+    <linearGradient id="ad-wing" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a5d99"/><stop offset="1" stop-color="#2d3b6c"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="120" cy="216" rx="50" ry="10" fill="#1b2447" opacity=".16"/>
+
+  <!-- ailes déployées -->
+  <path d="M78 118 Q28 88 14 120 Q34 116 40 128 Q22 126 20 148 Q40 136 54 144 Q40 150 42 166 Q66 146 84 148 Z" fill="url(#ad-wing)" stroke="#1b2447" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M162 118 Q212 88 226 120 Q206 116 200 128 Q218 126 220 148 Q200 136 186 144 Q200 150 198 166 Q174 146 156 148 Z" fill="url(#ad-wing)" stroke="#1b2447" stroke-width="2.6" stroke-linejoin="round"/>
+
+  <!-- queue -->
+  <path d="M150 180 Q196 182 192 152 Q210 158 205 178 Q198 200 162 197 Q145 193 150 180 Z" fill="url(#ad-body)" stroke="#1b2447" stroke-width="3"/>
+  <path d="M200 150 l19 -3 l-8 18 z" fill="url(#ad-gold)" stroke="#a9822f" stroke-width="1.2" stroke-linejoin="round"/>
+
+  <!-- corps -->
+  <path d="M120 66 C84 66 65 98 65 134 C65 176 88 200 120 200 C152 200 175 176 175 134 C175 98 156 66 120 66 Z" fill="url(#ad-body)" stroke="#1b2447" stroke-width="3.5"/>
+
+  <!-- crête dorsale -->
+  <path d="M120 52 l-9 20 l9 -5 l9 5 z" fill="url(#ad-gold)" stroke="#a9822f" stroke-width="1"/>
+  <!-- cornes plus longues -->
+  <path d="M99 78 Q84 52 93 40 Q104 54 110 74 Z" fill="url(#ad-gold)" stroke="#a9822f" stroke-width="1.6"/>
+  <path d="M141 78 Q156 52 147 40 Q136 54 130 74 Z" fill="url(#ad-gold)" stroke="#a9822f" stroke-width="1.6"/>
+  <!-- collerettes -->
+  <path d="M67 120 Q47 114 45 132 Q64 130 73 134 Z" fill="url(#ad-gold)" opacity=".92"/>
+  <path d="M173 120 Q193 114 195 132 Q176 130 167 134 Z" fill="url(#ad-gold)" opacity=".92"/>
+
+  <!-- ventre -->
+  <path d="M120 116 C103 116 94 134 94 154 C94 176 107 190 120 190 C133 190 146 176 146 154 C146 134 137 116 120 116 Z" fill="url(#ad-belly)"/>
+  <path d="M108 138 q12 6 24 0" fill="none" stroke="#d8c290" stroke-width="2"/>
+  <path d="M108 155 q12 6 24 0" fill="none" stroke="#d8c290" stroke-width="2"/>
+  <path d="M110 172 q10 5 20 0" fill="none" stroke="#d8c290" stroke-width="2"/>
+
+  <!-- pieds -->
+  <ellipse cx="101" cy="196" rx="16" ry="11" fill="url(#ad-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="139" cy="196" rx="16" ry="11" fill="url(#ad-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="101" cy="198" rx="8" ry="5" fill="url(#ad-belly)"/>
+  <ellipse cx="139" cy="198" rx="8" ry="5" fill="url(#ad-belly)"/>
+  <!-- bras -->
+  <ellipse cx="86" cy="162" rx="11" ry="14" fill="url(#ad-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="154" cy="162" rx="11" ry="14" fill="url(#ad-body)" stroke="#1b2447" stroke-width="2.5"/>
+
+  <!-- joues -->
+  <circle cx="91" cy="128" r="8" fill="#e8894a" opacity=".22"/>
+  <circle cx="149" cy="128" r="8" fill="#e8894a" opacity=".22"/>
+  <!-- yeux -->
+  <ellipse cx="101" cy="114" rx="10" ry="13" fill="#151d3b"/>
+  <ellipse cx="139" cy="114" rx="10" ry="13" fill="#151d3b"/>
+  <circle cx="98" cy="109" r="3.4" fill="#fff"/>
+  <circle cx="136" cy="109" r="3.4" fill="#fff"/>
+  <circle cx="104" cy="118" r="1.8" fill="#fff" opacity=".7"/>
+  <circle cx="142" cy="118" r="1.8" fill="#fff" opacity=".7"/>
+  <!-- museau -->
+  <path d="M113 132 q7 7 14 0" fill="none" stroke="#151d3b" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="115" cy="128" r="1.4" fill="#151d3b"/>
+  <circle cx="125" cy="128" r="1.4" fill="#151d3b"/>
+</svg>

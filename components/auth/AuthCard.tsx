@@ -36,7 +36,7 @@ export function AuthCard({ initialTab }: { initialTab: Tab }) {
     });
     setLoading(false);
     if (error) { setError("E-mail ou mot de passe incorrect."); return; }
-    router.push("/dashboard");
+    router.push("/plan");
     router.refresh();
   }
 

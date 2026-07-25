@@ -1,3 +1,5 @@
+// Layout des pages connectées. La barre latérale (dragon + plan + navigation)
+// est rendue ici via <Sidebar />.
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { userService } from "@/server/users/user.service";

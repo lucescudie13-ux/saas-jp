@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { userService } from "@/server/users/user.service";
 import { subscriptionService } from "@/server/subscriptions/subscription.service";
 import { ProfileForm } from "@/components/forms/ProfileForm";
+import { DragonNameField } from "@/components/forms/DragonNameField";
 
 export default async function ProfilePage() {
   const db = await createClient();
@@ -20,6 +21,8 @@ export default async function ProfilePage() {
 
       <div className="profile-grid">
         <ProfileForm profile={current.profile} />
+
+        <DragonNameField />
 
         <div className="pcard">
           <h3>Compte</h3>

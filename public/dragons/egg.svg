@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Œuf de dragon">
+  <defs>
+    <linearGradient id="egg-shell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3c4f8a"/><stop offset="1" stop-color="#232f5c"/>
+    </linearGradient>
+    <linearGradient id="egg-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ecd489"/><stop offset="1" stop-color="#c99a3f"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="120" cy="210" rx="52" ry="12" fill="#1b2447" opacity=".16"/>
+  <ellipse cx="120" cy="126" rx="64" ry="80" fill="url(#egg-shell)" stroke="#1b2447" stroke-width="3.5"/>
+  <ellipse cx="98" cy="94" rx="20" ry="32" fill="#ffffff" opacity=".10"/>
+  <path d="M60 148 q60 28 120 0" fill="none" stroke="url(#egg-gold)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M70 168 q50 20 100 0" fill="none" stroke="url(#egg-gold)" stroke-width="5.5" stroke-linecap="round" opacity=".85"/>
+  <path d="M78 108 q42 18 84 0" fill="none" stroke="url(#egg-gold)" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+  <path d="M120 54 l-11 20 l13 7 l-10 17 l15 11" fill="none" stroke="url(#egg-gold)" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="92" cy="132" r="3.2" fill="#ecd489" opacity=".85"/>
+  <circle cx="150" cy="120" r="2.6" fill="#ecd489" opacity=".75"/>
+  <circle cx="142" cy="158" r="2.4" fill="#ecd489" opacity=".65"/>
+  <circle cx="104" cy="176" r="2.2" fill="#ecd489" opacity=".6"/>
+  <circle cx="132" cy="92" r="2" fill="#ecd489" opacity=".7"/>
+</svg>

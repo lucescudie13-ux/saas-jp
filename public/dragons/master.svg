@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Dragon maître">
+  <defs>
+    <linearGradient id="ma-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#45589a"/><stop offset="1" stop-color="#273463"/>
+    </linearGradient>
+    <linearGradient id="ma-belly" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7efd8"/><stop offset="1" stop-color="#e4cf9c"/>
+    </linearGradient>
+    <linearGradient id="ma-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3dd97"/><stop offset="1" stop-color="#c1953c"/>
+    </linearGradient>
+    <linearGradient id="ma-wing" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4e619f"/><stop offset="1" stop-color="#2c3a6b"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="120" cy="218" rx="54" ry="10" fill="#1b2447" opacity=".16"/>
+
+  <!-- grandes ailes déployées -->
+  <path d="M76 112 Q16 74 6 112 Q26 108 32 122 Q10 122 8 146 Q30 132 44 140 Q24 146 24 168 Q46 150 58 158 Q46 164 48 182 Q72 150 84 146 Z" fill="url(#ma-wing)" stroke="#1b2447" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M164 112 Q224 74 234 112 Q214 108 208 122 Q230 122 232 146 Q210 132 196 140 Q216 146 216 168 Q194 150 182 158 Q194 164 192 182 Q168 150 156 146 Z" fill="url(#ma-wing)" stroke="#1b2447" stroke-width="2.6" stroke-linejoin="round"/>
+  <!-- nervures dorées -->
+  <path d="M84 146 L30 124 M84 150 L26 150 M84 156 L44 172" fill="none" stroke="url(#ma-gold)" stroke-width="1.6" opacity=".5"/>
+  <path d="M156 146 L210 124 M156 150 L214 150 M156 156 L196 172" fill="none" stroke="url(#ma-gold)" stroke-width="1.6" opacity=".5"/>
+
+  <!-- queue -->
+  <path d="M152 182 Q200 184 196 152 Q214 158 209 180 Q202 202 164 199 Q146 194 152 182 Z" fill="url(#ma-body)" stroke="#1b2447" stroke-width="3"/>
+  <path d="M204 150 l20 -4 l-8 20 z" fill="url(#ma-gold)" stroke="#a9822f" stroke-width="1.2" stroke-linejoin="round"/>
+
+  <!-- corps -->
+  <path d="M120 62 C82 62 62 96 62 134 C62 178 87 202 120 202 C153 202 178 178 178 134 C178 96 158 62 120 62 Z" fill="url(#ma-body)" stroke="#1b2447" stroke-width="3.5"/>
+
+  <!-- crête dorsale -->
+  <path d="M120 46 l-10 22 l10 -6 l10 6 z" fill="url(#ma-gold)" stroke="#a9822f" stroke-width="1"/>
+  <!-- cornes couronne (3 pointes) -->
+  <path d="M97 76 Q80 46 90 34 Q103 50 109 72 Z" fill="url(#ma-gold)" stroke="#a9822f" stroke-width="1.6"/>
+  <path d="M143 76 Q160 46 150 34 Q137 50 131 72 Z" fill="url(#ma-gold)" stroke="#a9822f" stroke-width="1.6"/>
+  <path d="M110 70 Q108 50 120 44 Q132 50 130 70 Z" fill="url(#ma-gold)" stroke="#a9822f" stroke-width="1.4"/>
+  <!-- gemme frontale -->
+  <circle cx="120" cy="92" r="5.5" fill="#7fd0e0" stroke="#a9822f" stroke-width="1.6"/>
+  <circle cx="118" cy="90" r="1.8" fill="#eafcff"/>
+  <!-- collerettes -->
+  <path d="M64 120 Q42 112 40 132 Q62 130 71 135 Z" fill="url(#ma-gold)" opacity=".92"/>
+  <path d="M176 120 Q198 112 200 132 Q178 130 169 135 Z" fill="url(#ma-gold)" opacity=".92"/>
+
+  <!-- plastron doré -->
+  <path d="M120 108 q22 6 22 26 q0 8 -4 14 q-18 -6 -36 0 q-4 -6 -4 -14 q0 -20 22 -26 Z" fill="url(#ma-gold)" opacity=".95" stroke="#a9822f" stroke-width="1.2"/>
+  <!-- ventre -->
+  <path d="M120 122 C104 122 96 140 96 160 C96 182 108 194 120 194 C132 194 144 182 144 160 C144 140 136 122 120 122 Z" fill="url(#ma-belly)"/>
+  <path d="M108 148 q12 6 24 0" fill="none" stroke="#d8c290" stroke-width="2"/>
+  <path d="M108 164 q12 6 24 0" fill="none" stroke="#d8c290" stroke-width="2"/>
+  <path d="M110 180 q10 5 20 0" fill="none" stroke="#d8c290" stroke-width="2"/>
+
+  <!-- pieds -->
+  <ellipse cx="100" cy="198" rx="17" ry="12" fill="url(#ma-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="140" cy="198" rx="17" ry="12" fill="url(#ma-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="100" cy="200" rx="9" ry="5" fill="url(#ma-belly)"/>
+  <ellipse cx="140" cy="200" rx="9" ry="5" fill="url(#ma-belly)"/>
+  <!-- bras -->
+  <ellipse cx="84" cy="162" rx="12" ry="15" fill="url(#ma-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="156" cy="162" rx="12" ry="15" fill="url(#ma-body)" stroke="#1b2447" stroke-width="2.5"/>
+
+  <!-- yeux (regard sûr) -->
+  <ellipse cx="101" cy="110" rx="9.5" ry="12" fill="#151d3b"/>
+  <ellipse cx="139" cy="110" rx="9.5" ry="12" fill="#151d3b"/>
+  <circle cx="98" cy="105" r="3.2" fill="#fff"/>
+  <circle cx="136" cy="105" r="3.2" fill="#fff"/>
+  <!-- museau -->
+  <path d="M112 128 q8 7 16 0" fill="none" stroke="#151d3b" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="114" cy="124" r="1.5" fill="#151d3b"/>
+  <circle cx="126" cy="124" r="1.5" fill="#151d3b"/>
+</svg>

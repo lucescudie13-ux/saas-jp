@@ -6,12 +6,13 @@ import type { VocabByLesson } from "@/server/content/content.types";
 import { VOCAB_TYPE_LABELS } from "@/lib/constants";
 import { VocabDrawer } from "./VocabDrawer";
 
-type Sort = "list" | "lesson";
+type Sort = "list" | "lesson" | "theme";
 
 /** Une ligne de mot (réutilisée dans la vue liste et la vue par leçon). */
-function VocabRow({ v, onClick }: { v: VocabItemRow; onClick: () => void }) {
+function VocabRow({ v, num, onClick }: { v: VocabItemRow; num: number; onClick: () => void }) {
   return (
     <li className="vrow" onClick={onClick}>
+      <span className="vnum">{num}</span>
       <span className="vglyph">{v.lemma}</span>
       <span className="vreading">{v.reading ?? ""}</span>
       <span className="vgloss">{v.gloss}</span>
@@ -46,7 +47,20 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
   );
   const ungrouped = useMemo(() => byLesson.ungrouped.filter(match), [byLesson.ungrouped, match]);
 
-  const visibleCount = sort === "list" ? listItems.length : groups.reduce((n, g) => n + g.vocab.length, 0) + ungrouped.length;
+  // Regroupement par thème : les leçons de vocabulaire sont thématiques
+  // (« Alimentation », « Famille »…). On les présente par titre, sans numéro.
+  const themeGroups = useMemo(() => {
+    const all = groups.map((g) => ({ theme: g.lesson.title, vocab: g.vocab }));
+    if (ungrouped.length > 0) all.push({ theme: "Autres", vocab: ungrouped });
+    return all.sort((a, b) =>
+      a.theme === "Autres" ? 1 : b.theme === "Autres" ? -1 : a.theme.localeCompare(b.theme, "fr")
+    );
+  }, [groups, ungrouped]);
+
+  const visibleCount =
+    sort === "lesson" || sort === "theme"
+      ? groups.reduce((n, g) => n + g.vocab.length, 0) + ungrouped.length
+      : listItems.length;
   const noResults = query.trim() !== "" && visibleCount === 0;
 
   return (
@@ -62,6 +76,14 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
           title={hasLessons ? undefined : "Aucune leçon pour ce niveau"}
         >
           Par leçon
+        </button>
+        <button
+          className={`mode-btn ${sort === "theme" ? "active" : ""}`}
+          onClick={() => setSort("theme")}
+          disabled={!hasLessons}
+          title={hasLessons ? undefined : "Aucune leçon pour ce niveau"}
+        >
+          Par thème
         </button>
       </div>
 
@@ -82,10 +104,26 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
         <p className="empty">Aucun mot ne correspond à « {query} ».</p>
       ) : sort === "list" ? (
         <ul className="vlist">
-          {listItems.map((v) => (
-            <VocabRow key={v.id} v={v} onClick={() => setSelected(v)} />
+          {listItems.map((v, i) => (
+            <VocabRow key={v.id} v={v} num={i + 1} onClick={() => setSelected(v)} />
           ))}
         </ul>
+      ) : sort === "theme" ? (
+        <div className="vlesson-groups">
+          {themeGroups.map(({ theme, vocab }) => (
+            <section key={theme} className="vlesson-group">
+              <h2 className="vlesson-title">
+                <span className="vlesson-num">Thème</span>
+                {theme}
+              </h2>
+              <ul className="vlist">
+                {vocab.map((v, i) => (
+                  <VocabRow key={v.id} v={v} num={i + 1} onClick={() => setSelected(v)} />
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
       ) : (
         <div className="vlesson-groups">
           {groups.map(({ lesson, vocab }) => (
@@ -95,8 +133,8 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
                 {lesson.title}
               </h2>
               <ul className="vlist">
-                {vocab.map((v) => (
-                  <VocabRow key={v.id} v={v} onClick={() => setSelected(v)} />
+                {vocab.map((v, i) => (
+                  <VocabRow key={v.id} v={v} num={i + 1} onClick={() => setSelected(v)} />
                 ))}
               </ul>
             </section>
@@ -109,8 +147,8 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
                 Autres mots
               </h2>
               <ul className="vlist">
-                {ungrouped.map((v) => (
-                  <VocabRow key={v.id} v={v} onClick={() => setSelected(v)} />
+                {ungrouped.map((v, i) => (
+                  <VocabRow key={v.id} v={v} num={i + 1} onClick={() => setSelected(v)} />
                 ))}
               </ul>
             </section>

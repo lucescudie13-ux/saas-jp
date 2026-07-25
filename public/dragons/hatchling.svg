@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Dragon en éclosion">
+  <defs>
+    <linearGradient id="ha-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3c4f8a"/><stop offset="1" stop-color="#25315e"/>
+    </linearGradient>
+    <linearGradient id="ha-shell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#41548f"/><stop offset="1" stop-color="#28356a"/>
+    </linearGradient>
+    <linearGradient id="ha-belly" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6eed6"/><stop offset="1" stop-color="#e6d3a4"/>
+    </linearGradient>
+    <linearGradient id="ha-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ecd489"/><stop offset="1" stop-color="#c99a3f"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="120" cy="214" rx="48" ry="10" fill="#1b2447" opacity=".16"/>
+
+  <!-- éclat de coquille projeté -->
+  <g transform="rotate(20 196 56)">
+    <path d="M176 54 q20 -14 40 0 l-7 9 q-13 -8 -26 0 z" fill="url(#ha-shell)" stroke="#1b2447" stroke-width="2.5" stroke-linejoin="round"/>
+  </g>
+
+  <!-- bébé dragon (tête) -->
+  <path d="M120 66 C90 66 74 92 74 120 C74 150 96 168 120 168 C144 168 166 150 166 120 C166 92 150 66 120 66 Z" fill="url(#ha-body)" stroke="#1b2447" stroke-width="3.5"/>
+  <!-- petites cornes -->
+  <path d="M101 78 Q92 60 99 52 Q107 62 110 76 Z" fill="url(#ha-gold)" stroke="#a9822f" stroke-width="1.4"/>
+  <path d="M139 78 Q148 60 141 52 Q133 62 130 76 Z" fill="url(#ha-gold)" stroke="#a9822f" stroke-width="1.4"/>
+  <!-- collerettes -->
+  <path d="M76 116 Q60 112 58 126 Q72 124 80 128 Z" fill="url(#ha-gold)" opacity=".9"/>
+  <path d="M164 116 Q180 112 182 126 Q168 124 160 128 Z" fill="url(#ha-gold)" opacity=".9"/>
+  <!-- joues -->
+  <circle cx="94" cy="126" r="8" fill="#e8894a" opacity=".22"/>
+  <circle cx="146" cy="126" r="8" fill="#e8894a" opacity=".22"/>
+  <!-- yeux -->
+  <ellipse cx="104" cy="114" rx="10" ry="13" fill="#151d3b"/>
+  <ellipse cx="136" cy="114" rx="10" ry="13" fill="#151d3b"/>
+  <circle cx="101" cy="109" r="3.4" fill="#fff"/>
+  <circle cx="133" cy="109" r="3.4" fill="#fff"/>
+  <circle cx="107" cy="118" r="1.7" fill="#fff" opacity=".7"/>
+  <circle cx="139" cy="118" r="1.7" fill="#fff" opacity=".7"/>
+  <!-- museau -->
+  <path d="M114 132 q6 6 12 0" fill="none" stroke="#151d3b" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="116" cy="128" r="1.3" fill="#151d3b"/>
+  <circle cx="124" cy="128" r="1.3" fill="#151d3b"/>
+
+  <!-- coquille (bas) -->
+  <path d="M60 150 Q60 208 120 208 Q180 208 180 150 Z" fill="url(#ha-shell)" stroke="#1b2447" stroke-width="3.5"/>
+  <!-- bord dentelé doré -->
+  <path d="M60 150 l14 -9 l12 9 l13 -9 l12 9 l13 -9 l12 9 l14 -9 l14 9" fill="none" stroke="url(#ha-gold)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M78 172 q42 14 84 0" fill="none" stroke="url(#ha-gold)" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+  <!-- petites mains agrippées -->
+  <ellipse cx="74" cy="150" rx="10" ry="8" fill="url(#ha-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="166" cy="150" rx="10" ry="8" fill="url(#ha-body)" stroke="#1b2447" stroke-width="2.5"/>
+</svg>

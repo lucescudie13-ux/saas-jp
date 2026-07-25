@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Dragon légendaire">
+  <defs>
+    <radialGradient id="lg-halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffe9a6" stop-opacity=".85"/>
+      <stop offset="0.55" stop-color="#f6b53f" stop-opacity=".35"/>
+      <stop offset="1" stop-color="#f6b53f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lg-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a5da4"/><stop offset="1" stop-color="#28356a"/>
+    </linearGradient>
+    <linearGradient id="lg-belly" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f9f1da"/><stop offset="1" stop-color="#e4cf9c"/>
+    </linearGradient>
+    <linearGradient id="lg-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe9a6"/><stop offset="1" stop-color="#c1953c"/>
+    </linearGradient>
+    <linearGradient id="lg-wing" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5568ab"/><stop offset="1" stop-color="#2d3b70"/>
+    </linearGradient>
+    <linearGradient id="lg-flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ef7d3a"/><stop offset="1" stop-color="#ffd257"/>
+    </linearGradient>
+  </defs>
+
+  <!-- halo -->
+  <circle cx="120" cy="118" r="112" fill="url(#lg-halo)"/>
+  <ellipse cx="120" cy="220" rx="56" ry="10" fill="#1b2447" opacity=".16"/>
+
+  <!-- flammes derrière -->
+  <path d="M52 150 q-10 -26 6 -42 q-2 16 10 20 q-8 -22 8 -38 q0 26 14 36 q10 12 2 30 z" fill="url(#lg-flame)" opacity=".9"/>
+  <path d="M188 150 q10 -26 -6 -42 q2 16 -10 20 q8 -22 -8 -38 q0 26 -14 36 q-10 12 -2 30 z" fill="url(#lg-flame)" opacity=".9"/>
+
+  <!-- grandes ailes -->
+  <path d="M74 106 Q8 66 -2 108 Q20 104 26 118 Q2 118 0 144 Q24 130 40 138 Q16 146 16 170 Q42 150 56 158 Q42 166 44 186 Q72 148 84 142 Z" fill="url(#lg-wing)" stroke="#1b2447" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M166 106 Q232 66 242 108 Q220 104 214 118 Q238 118 240 144 Q216 130 200 138 Q224 146 224 170 Q198 150 184 158 Q198 166 196 186 Q168 148 156 142 Z" fill="url(#lg-wing)" stroke="#1b2447" stroke-width="2.6" stroke-linejoin="round"/>
+  <path d="M84 142 L24 118 M84 148 L18 146 M84 156 L42 172" fill="none" stroke="url(#lg-gold)" stroke-width="1.7" opacity=".55"/>
+  <path d="M156 142 L216 118 M156 148 L222 146 M156 156 L198 172" fill="none" stroke="url(#lg-gold)" stroke-width="1.7" opacity=".55"/>
+
+  <!-- moustaches / crinière dorées -->
+  <path d="M78 118 Q40 128 30 108" fill="none" stroke="url(#lg-gold)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M162 118 Q200 128 210 108" fill="none" stroke="url(#lg-gold)" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- queue -->
+  <path d="M154 184 Q204 186 200 152 Q219 158 214 182 Q206 205 166 201 Q147 195 154 184 Z" fill="url(#lg-body)" stroke="#1b2447" stroke-width="3"/>
+  <path d="M208 150 l22 -4 l-8 21 z" fill="url(#lg-gold)" stroke="#a9822f" stroke-width="1.2" stroke-linejoin="round"/>
+
+  <!-- corps -->
+  <path d="M120 58 C80 58 59 94 59 134 C59 180 86 204 120 204 C154 204 181 180 181 134 C181 94 160 58 120 58 Z" fill="url(#lg-body)" stroke="#1b2447" stroke-width="3.5"/>
+
+  <!-- crête dorsale -->
+  <path d="M120 40 l-11 24 l11 -7 l11 7 z" fill="url(#lg-gold)" stroke="#a9822f" stroke-width="1"/>
+  <!-- couronne de cornes -->
+  <path d="M95 74 Q76 40 87 28 Q101 46 108 70 Z" fill="url(#lg-gold)" stroke="#a9822f" stroke-width="1.6"/>
+  <path d="M145 74 Q164 40 153 28 Q139 46 132 70 Z" fill="url(#lg-gold)" stroke="#a9822f" stroke-width="1.6"/>
+  <path d="M108 68 Q104 42 120 34 Q136 42 132 68 Z" fill="url(#lg-gold)" stroke="#a9822f" stroke-width="1.5"/>
+  <!-- gemme frontale -->
+  <path d="M120 84 l7 8 l-7 9 l-7 -9 z" fill="#ff6a5a" stroke="#a9822f" stroke-width="1.6" stroke-linejoin="round"/>
+  <circle cx="118" cy="89" r="1.7" fill="#ffd9d2"/>
+
+  <!-- plastron doré -->
+  <path d="M120 104 q24 6 24 28 q0 9 -4 16 q-20 -6 -40 0 q-4 -7 -4 -16 q0 -22 24 -28 Z" fill="url(#lg-gold)" stroke="#a9822f" stroke-width="1.2"/>
+  <!-- ventre -->
+  <path d="M120 120 C103 120 94 140 94 162 C94 186 108 198 120 198 C132 198 146 186 146 162 C146 140 137 120 120 120 Z" fill="url(#lg-belly)"/>
+  <path d="M108 150 q12 6 24 0" fill="none" stroke="#d8c290" stroke-width="2"/>
+  <path d="M108 167 q12 6 24 0" fill="none" stroke="#d8c290" stroke-width="2"/>
+  <path d="M110 183 q10 5 20 0" fill="none" stroke="#d8c290" stroke-width="2"/>
+
+  <!-- pieds -->
+  <ellipse cx="99" cy="200" rx="18" ry="12" fill="url(#lg-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="141" cy="200" rx="18" ry="12" fill="url(#lg-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="99" cy="202" rx="9" ry="5" fill="url(#lg-belly)"/>
+  <ellipse cx="141" cy="202" rx="9" ry="5" fill="url(#lg-belly)"/>
+  <!-- bras -->
+  <ellipse cx="82" cy="164" rx="12" ry="16" fill="url(#lg-body)" stroke="#1b2447" stroke-width="2.5"/>
+  <ellipse cx="158" cy="164" rx="12" ry="16" fill="url(#lg-body)" stroke="#1b2447" stroke-width="2.5"/>
+
+  <!-- yeux rayonnants dorés -->
+  <ellipse cx="101" cy="108" rx="9.5" ry="12" fill="#151d3b"/>
+  <ellipse cx="139" cy="108" rx="9.5" ry="12" fill="#151d3b"/>
+  <ellipse cx="101" cy="108" rx="5.5" ry="7.5" fill="#ffdd6b"/>
+  <ellipse cx="139" cy="108" rx="5.5" ry="7.5" fill="#ffdd6b"/>
+  <circle cx="99" cy="104" r="2.2" fill="#fff"/>
+  <circle cx="137" cy="104" r="2.2" fill="#fff"/>
+  <!-- museau -->
+  <path d="M112 126 q8 7 16 0" fill="none" stroke="#151d3b" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="114" cy="122" r="1.5" fill="#151d3b"/>
+  <circle cx="126" cy="122" r="1.5" fill="#151d3b"/>
+</svg>

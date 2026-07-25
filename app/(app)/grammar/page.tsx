@@ -6,7 +6,7 @@ import { JLPT_LEVELS, type JlptLevel } from "@/lib/constants";
 
 export default async function GrammarPage({ searchParams }: { searchParams: Promise<{ level?: string }> }) {
   const { level } = await searchParams;
-  const active = JLPT_LEVELS.includes(level as JlptLevel) ? (level as JlptLevel) : undefined;
+  const active = JLPT_LEVELS.includes(level as JlptLevel) ? (level as JlptLevel) : "N5";
   const db = await createClient();
   const items = await contentService.listGrammar(db, active);
 
@@ -14,8 +14,7 @@ export default async function GrammarPage({ searchParams }: { searchParams: Prom
     <>
       <div className="page-head">
         <span className="pill-tag">Grammaire</span>
-        <h1>Points de grammaire</h1>
-        <p>Les structures essentielles, expliquées simplement, niveau par niveau.</p>
+        <h1>Règles de grammaire</h1>
       </div>
       <LevelTabs base="/grammar" active={active} />
       <GrammarBrowser items={items} />
