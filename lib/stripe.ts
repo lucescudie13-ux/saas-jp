@@ -12,8 +12,11 @@ export function getStripe(): Stripe | null {
   return cached;
 }
 
-/** Prix d'abonnement « Pro » (Price ID Stripe). */
+/** Prix de l'abonnement mensuel (Price ID Stripe, récurrent). */
 export const stripePriceId = () => process.env.STRIPE_PRICE_ID ?? "";
+
+/** Prix de l'accès à vie (Price ID Stripe, paiement unique). */
+export const stripeLifetimePriceId = () => process.env.STRIPE_LIFETIME_PRICE_ID ?? "";
 
 /** URL publique de l'app (pour les redirections success/cancel). */
 export const appUrl = () =>

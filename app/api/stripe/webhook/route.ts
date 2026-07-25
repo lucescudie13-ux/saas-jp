@@ -27,11 +27,15 @@ export async function POST(req: Request) {
       const s = event.data.object as Stripe.Checkout.Session;
       const userId = (s.metadata?.user_id ?? s.client_reference_id) as string | undefined;
       if (userId) {
+        const lifetime = s.mode === "payment"; // paiement unique = accès à vie
         await upsert(userId, {
           status: "active",
-          plan: "pro",
+          plan: lifetime ? "lifetime" : "pro",
           stripe_customer_id: typeof s.customer === "string" ? s.customer : s.customer?.id ?? null,
           stripe_subscription_id: typeof s.subscription === "string" ? s.subscription : null,
+          // L'accès à vie n'expire pas ; l'abonnement sera tenu à jour par les
+          // événements customer.subscription.*.
+          current_period_end: null,
         });
       }
     } else if (event.type.startsWith("customer.subscription.")) {

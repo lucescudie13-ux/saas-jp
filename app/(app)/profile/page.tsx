@@ -2,9 +2,10 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { userService } from "@/server/users/user.service";
 import { subscriptionService } from "@/server/subscriptions/subscription.service";
+import Link from "next/link";
+import type { Route } from "next";
 import { ProfileForm } from "@/components/forms/ProfileForm";
 import { DragonNameField } from "@/components/forms/DragonNameField";
-import { SubscribeButton } from "@/components/features/SubscribeButton";
 
 export default async function ProfilePage() {
   const db = await createClient();
@@ -33,7 +34,7 @@ export default async function ProfilePage() {
           </p>
           {!sub.isPro && (
             <div style={{ marginTop: 14 }}>
-              <SubscribeButton label="Passer à Pro — débloque tous les niveaux →" className="btn primary" />
+              <Link href={"/abonnement" as Route} className="btn primary">Passer à Pro — voir les offres →</Link>
             </div>
           )}
           <form action="/auth/signout" method="post" style={{ marginTop: 16 }}>

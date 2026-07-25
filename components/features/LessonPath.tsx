@@ -8,7 +8,6 @@ import { getLevelLessons } from "@/lib/curriculum";
 import { getValidated } from "@/lib/lesson-progress";
 import { computeDragon, type DragonStage } from "@/lib/dragon";
 import { MapViewport } from "./MapViewport";
-import { SubscribeButton } from "./SubscribeButton";
 
 /**
  * « La route du dragon » — une carte d'aventure par niveau JLPT, toutes
@@ -174,7 +173,7 @@ export function LessonPath({ premium = false }: { premium?: boolean }) {
                     <span className="map-lock-ic" aria-hidden>🔒</span>
                     <div className="map-lock-title">Niveau {lv} · {LEVEL_LABELS[lv]}</div>
                     <p>Débloque ce niveau pour ouvrir sa route et faire évoluer ton dragon.</p>
-                    <SubscribeButton label={`Débloquer ${lv} →`} className="btn map-lock-cta" />
+                    <Link href={"/abonnement" as Route} className="btn map-lock-cta">Débloquer {lv} →</Link>
                   </div>
                 </div>
               </div>
