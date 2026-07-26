@@ -1,0 +1,78 @@
+// Importateur de vocabulaire → vocab_items (base Supabase distante).
+// Usage : node scripts/apply_vocab.mjs inspect | apply
+// Lit les identifiants service-role depuis .env.local (jamais commit).
+import { readFileSync } from "node:fs";
+import { createClient } from "@supabase/supabase-js";
+
+const MODE = process.argv[2] || "inspect";
+const SEED = process.argv[3]; // chemin du vocab_seed.json
+
+// --- charge .env.local sans dépendance ---
+const env = {};
+for (const line of readFileSync(".env.local", "utf8").split(/\r?\n/)) {
+  const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+  if (m) env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+}
+const url = env.NEXT_PUBLIC_SUPABASE_URL;
+const key = env.SUPABASE_SERVICE_ROLE_KEY;
+if (!url || !key) { console.error("Identifiants Supabase manquants dans .env.local"); process.exit(1); }
+const db = createClient(url, key, { auth: { persistSession: false } });
+
+const count = async (like) => {
+  let q = db.from("vocab_items").select("*", { count: "exact", head: true });
+  if (like) q = q.like("slug", like);
+  const { count, error } = await q;
+  if (error) throw error;
+  return count;
+};
+
+async function inspect() {
+  console.log("Projet:", url.replace(/^https?:\/\//, "").split(".")[0]);
+  console.log("vocab_items total :", await count());
+  console.log("  slug like 'n5-%' (ancien plat) :", await count("n5-%"));
+  console.log("  slug like 'V-%'  (par leçon)    :", await count("V-%"));
+  for (const lv of ["N5", "N4", "N3", "N2", "N1"]) console.log(`  ${lv}:`, await count(`V-${lv}-%`));
+
+  if (!SEED) return;
+  const seed = JSON.parse(readFileSync(SEED, "utf8"));
+  const seedBy = new Map(seed.map((r) => [r.slug, r]));
+  console.log(`\nComparaison au fichier (${seed.length} mots) :`);
+  // échantillon de slugs à vérifier mot pour mot
+  const samples = ["V-N5-01-001", "V-N5-01-003", "V-N5-23-001", "V-N4-01-001", "V-N3-01-001", "V-N1-01-001"];
+  const { data } = await db.from("vocab_items").select("slug,level,type,lemma,reading,gloss").in("slug", samples);
+  let mismatch = 0;
+  for (const s of samples) {
+    const remote = (data || []).find((r) => r.slug === s);
+    const local = seedBy.get(s);
+    const same = remote && local && remote.lemma === local.lemma && (remote.reading || null) === local.reading && remote.gloss === local.gloss;
+    if (!same) mismatch++;
+    console.log(`  ${s}: ${same ? "OK" : "DIFF"}  remote=${remote ? remote.lemma + "/" + remote.reading : "∅"}  file=${local ? local.lemma + "/" + local.reading : "∅"}`);
+  }
+  console.log(mismatch ? `\n⚠ ${mismatch} écart(s) — la base ne correspond pas exactement au fichier.` : "\n✓ Échantillon identique au fichier.");
+}
+
+async function apply() {
+  const rows = JSON.parse(readFileSync(SEED, "utf8"));
+  console.log(`Seed chargé : ${rows.length} mots.`);
+  console.log("Avant :", { total: await count(), n5plat: await count("n5-%"), parLecon: await count("V-%") });
+
+  // 1) supprime l'ancien N5 plat (migration 005) — remplacement propre.
+  const del = await db.from("vocab_items").delete().like("slug", "n5-%");
+  if (del.error) throw del.error;
+  console.log("Ancien N5 plat supprimé.");
+
+  // 2) upsert par lots (idempotent sur slug).
+  const B = 500;
+  for (let i = 0; i < rows.length; i += B) {
+    const chunk = rows.slice(i, i + B);
+    const { error } = await db.from("vocab_items").upsert(chunk, { onConflict: "slug" });
+    if (error) { console.error(`Lot ${i}-${i + chunk.length} échec :`, error.message); process.exit(1); }
+    process.stdout.write(`\r  upsert ${Math.min(i + B, rows.length)}/${rows.length}`);
+  }
+  console.log("\nAprès :", { total: await count(), n5plat: await count("n5-%"), parLecon: await count("V-%") });
+  for (const lv of ["N5", "N4", "N3", "N2", "N1"]) {
+    console.log(`  ${lv}: ${await count(`V-${lv}-%`)}`);
+  }
+}
+
+(MODE === "apply" ? apply() : inspect()).catch((e) => { console.error(e); process.exit(1); });
