@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import Link from "next/link";
+import type { Route } from "next";
 import type { CombinedLesson, CombinedModule } from "@/lib/curriculum";
 import { TRACK_LABELS, TRACK_ICONS } from "@/lib/curriculum";
 import type { GrammarRule } from "@/lib/grammar-content";
@@ -26,7 +28,7 @@ const PART2 = [
   { key: "expr-orale", icon: "🎤", title: "Expression orale", desc: "Un sujet à l'oral, avec correction personnalisée." },
 ];
 
-export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExercises, conjExercises, comprehension }: {
+export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExercises, conjExercises, comprehension, nextHref }: {
   lesson: CombinedLesson;
   vocab: VocabItemRow[];
   grammar: GrammarRule[];
@@ -34,6 +36,7 @@ export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExer
   grammarExercises: ExItem[];
   conjExercises: ExItem[];
   comprehension: Comprehension | null;
+  nextHref?: Route | null;
 }) {
   // Pile de vues plein écran : leçon → contenu du module → détail (mot / règle).
   // Chaque ouverture empile une entrée d'historique, chaque « Retour » en dépile
@@ -109,6 +112,9 @@ export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExer
     return <p className="lr-mod-note">Contenu à venir.</p>;
   };
 
+  // Leçon terminée = tous les modules d'apprentissage (Partie 1) validés.
+  const allDone = lesson.codes.length > 0 && lesson.codes.every((c) => validated.has(c));
+
   return (
     <div className="lr">
       <section className="lr-part">
@@ -175,6 +181,21 @@ export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExer
           })}
         </div>
       </section>
+
+      {allDone && (
+        <div className="lr-complete">
+          <span className="lr-complete-ic" aria-hidden>🎉</span>
+          <div className="lr-complete-txt">
+            <b>Leçon {lesson.num} terminée !</b>
+            <span>Tu as validé tout l&apos;apprentissage de cette leçon.</span>
+          </div>
+          {nextHref ? (
+            <Link href={nextHref} className="btn primary lr-complete-cta">Leçon suivante →</Link>
+          ) : (
+            <Link href={"/plan" as Route} className="btn primary lr-complete-cta">Retour au plan →</Link>
+          )}
+        </div>
+      )}
     </div>
   );
 }

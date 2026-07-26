@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { JLPT_LEVELS, type JlptLevel } from "@/lib/constants";
-import { getCombinedLesson } from "@/lib/curriculum";
+import { getCombinedLesson, levelLessonCount } from "@/lib/curriculum";
 import { LessonRoadmap } from "@/components/features/LessonRoadmap";
 import { createClient } from "@/lib/supabase/server";
 import { contentService } from "@/server/content/content.service";
@@ -14,6 +14,9 @@ export default async function LeconPage({ params }: { params: Promise<{ level: s
   if (!Number.isInteger(n)) notFound();
   const lesson = getCombinedLesson(level as JlptLevel, n);
   if (!lesson) notFound();
+
+  const total = levelLessonCount(level as JlptLevel);
+  const nextHref = n < total ? (`/lecon/${level}/${n + 1}` as Route) : null;
 
   const vocabMod = lesson.modules.find((m) => m.track === "vocab");
   const grammarMod = lesson.modules.find((m) => m.track === "grammar");
@@ -35,7 +38,7 @@ export default async function LeconPage({ params }: { params: Promise<{ level: s
         <span className="pill-tag">{lesson.level} · Leçon {lesson.num}</span>
         <h1>{vocabMod?.lesson.title ?? lesson.modules[0]?.lesson.title ?? `Leçon ${lesson.num}`}</h1>
       </div>
-      <LessonRoadmap lesson={lesson} vocab={vocab} grammar={grammar} conjugation={conjugation} grammarExercises={grammarExercises} conjExercises={conjExercises} comprehension={comprehension} />
+      <LessonRoadmap lesson={lesson} vocab={vocab} grammar={grammar} conjugation={conjugation} grammarExercises={grammarExercises} conjExercises={conjExercises} comprehension={comprehension} nextHref={nextHref} />
     </>
   );
 }

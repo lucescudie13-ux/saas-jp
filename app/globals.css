@@ -1064,6 +1064,15 @@
 /* Bannière paywall (redirection vers /abonnement). */
 .paywall-note{background:var(--vermilion-soft);color:var(--vermilion-deep);border:1px solid var(--vermilion);border-radius:12px;padding:14px 18px;font-weight:600;line-height:1.55;max-width:640px;margin-bottom:20px}
 
+/* Fin de leçon : bandeau « Leçon terminée » + bouton leçon suivante. */
+.lr-complete{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:28px;padding:20px 24px;border-radius:16px;background:linear-gradient(135deg,var(--vermilion-soft),var(--card));border:1px solid var(--vermilion);box-shadow:var(--shadow)}
+.lr-complete-ic{font-size:34px;line-height:1;flex:none}
+.lr-complete-txt{display:flex;flex-direction:column;gap:2px;margin-right:auto}
+.lr-complete-txt b{font-size:1.1rem}
+.lr-complete-txt span{color:var(--ink-soft);font-size:.92rem}
+.lr-complete-cta{width:auto}
+@media(max-width:520px){.lr-complete-cta{width:100%}}
+
 .lp{background:var(--paper);color:var(--ink);font-family:var(--sans);overflow-x:hidden}
 .lp .btn{width:auto}
 .lp a{color:inherit}
