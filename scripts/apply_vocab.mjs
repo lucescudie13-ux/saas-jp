@@ -75,4 +75,68 @@ async function apply() {
   }
 }
 
-(MODE === "apply" ? apply() : inspect()).catch((e) => { console.error(e); process.exit(1); });
+async function diff() {
+  const seed = JSON.parse(readFileSync(SEED, "utf8"));
+  const seedBy = new Map(seed.map((r) => [r.slug, r]));
+  const remote = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await db.from("vocab_items")
+      .select("slug,level,type,lemma,reading,gloss").order("slug").range(from, from + PAGE - 1);
+    if (error) throw error;
+    remote.push(...data);
+    if (data.length < PAGE) break;
+  }
+  const remoteBy = new Map(remote.map((r) => [r.slug, r]));
+  const onlyFile = [...seedBy.keys()].filter((s) => !remoteBy.has(s));
+  const onlyDb = [...remoteBy.keys()].filter((s) => !seedBy.has(s));
+  let fieldDiff = 0; const ex = []; const details = [];
+  for (const [slug, l] of seedBy) {
+    const r = remoteBy.get(slug); if (!r) continue;
+    const dl = r.lemma !== l.lemma, dr = (r.reading || null) !== l.reading, dg = r.gloss !== l.gloss, dv = r.level !== l.level;
+    if (dl || dr || dg || dv) {
+      fieldDiff++; if (ex.length < 6) ex.push(slug);
+      details.push(`${slug}  [${[dl && "lemma", dr && "reading", dg && "gloss", dv && "level"].filter(Boolean).join(",")}]\n   FICHIER: lemma=${l.lemma} reading=${l.reading} gloss=${l.gloss}\n   BASE   : lemma=${r.lemma} reading=${r.reading} gloss=${r.gloss}`);
+    }
+  }
+  const { writeFileSync } = await import("node:fs");
+  writeFileSync(SEED.replace(/[^/\\]+$/, "mismatches.txt"), details.join("\n"), "utf8");
+  console.log(`Fichier : ${seed.length} mots  |  Base distante : ${remote.length} mots`);
+  for (const lv of ["N5", "N4", "N3", "N2", "N1"]) console.log(`  ${lv}:`, await count(`V-${lv}-%`));
+  console.log("Slugs seulement dans le FICHIER :", onlyFile.length, onlyFile.slice(0, 5));
+  console.log("Slugs seulement dans la BASE   :", onlyDb.length, onlyDb.slice(0, 5));
+  console.log("Différences de contenu         :", fieldDiff, ex);
+  console.log(onlyFile.length === 0 && onlyDb.length === 0 && fieldDiff === 0
+    ? "\n✓ IDENTIQUE À 100 % — la base en ligne = ton fichier (les 7847 mots)."
+    : "\n⚠ Des écarts existent (voir ci-dessus).");
+}
+
+async function dump() {
+  // Génère une migration SQL fidèle à l'état RÉEL de la base distante.
+  const { writeFileSync } = await import("node:fs");
+  const rows = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await db.from("vocab_items")
+      .select("slug,level,type,lemma,reading,gloss,position").order("level").order("position").range(from, from + PAGE - 1);
+    if (error) throw error;
+    rows.push(...data);
+    if (data.length < PAGE) break;
+  }
+  const esc = (s) => s.replace(/'/g, "''");
+  const out = [
+    "-- 009_vocab_content_v2.sql — Vocabulaire complet N5→N1 (snapshot fidèle de la base distante).",
+    "-- Source : Listes_vocabulaire_JLPT_par_lecon_v2.xlsx. Remplace l'ancien N5 plat (005).",
+    "-- Idempotent : on conflict (slug) do update.",
+    "delete from vocab_items where slug like 'n5-%';",
+    "insert into vocab_items (slug, level, type, lemma, reading, gloss, position) values",
+    rows.map((e) => `('${e.slug}','${e.level}','${e.type}','${esc(e.lemma)}',${e.reading == null ? "NULL" : `'${esc(e.reading)}'`},'${esc(e.gloss)}',${e.position})`).join(",\n"),
+    "on conflict (slug) do update set level=excluded.level, type=excluded.type, lemma=excluded.lemma, reading=excluded.reading, gloss=excluded.gloss, position=excluded.position;",
+    "",
+  ].join("\n");
+  writeFileSync(SEED, out, "utf8"); // ici SEED = chemin de sortie du .sql
+  console.log(`Migration écrite depuis la base : ${rows.length} mots → ${SEED}`);
+}
+
+const run = MODE === "apply" ? apply : MODE === "diff" ? diff : MODE === "dump" ? dump : inspect;
+run().catch((e) => { console.error(e); process.exit(1); });
