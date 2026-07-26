@@ -2,11 +2,24 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database.types";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/auth", "/", "/conditions", "/confidentialite", "/mentions-legales", "/api/stripe/webhook"];
+const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/auth", "/", "/conditions", "/confidentialite", "/mentions-legales", "/telecharger", "/manifest.webmanifest", "/sw.js", "/api/stripe/webhook"];
+
+// Chemins accessibles à un utilisateur CONNECTÉ mais NON abonné (quand le paywall
+// est actif) : la page d'abonnement (pour payer) et le profil (pour se déconnecter).
+const PAYWALL_EXEMPT = ["/abonnement", "/profile"];
 
 function isPublic(pathname: string) {
   return PUBLIC_PATHS.some(
     (p) => pathname === p || pathname.startsWith(p + "/") || pathname.startsWith("/auth")
+  );
+}
+
+function paywallExempt(pathname: string) {
+  return (
+    isPublic(pathname) ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/auth") ||
+    PAYWALL_EXEMPT.some((p) => pathname === p || pathname.startsWith(p + "/"))
   );
 }
 
@@ -56,6 +69,25 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/plan";
     return NextResponse.redirect(url);
+  }
+
+  // Paywall (accès réservé aux comptes payants) — ACTIF seulement si
+  // PAYWALL_ENABLED="true". Les e-mails de PAYWALL_BYPASS_EMAILS (dont le tien)
+  // gardent toujours l'accès. Sans abonnement actif → redirection vers /abonnement.
+  if (user && process.env.PAYWALL_ENABLED === "true" && !paywallExempt(pathname)) {
+    const bypass = (process.env.PAYWALL_BYPASS_EMAILS ?? "")
+      .split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+    const email = (user.email ?? "").toLowerCase();
+    if (!email || !bypass.includes(email)) {
+      const { data: sub } = await supabase
+        .from("subscriptions").select("status").eq("user_id", user.id).maybeSingle();
+      if (sub?.status !== "active") {
+        const url = request.nextUrl.clone();
+        url.pathname = "/abonnement";
+        url.searchParams.set("paywall", "1");
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
   return response;

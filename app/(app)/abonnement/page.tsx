@@ -3,12 +3,17 @@ import { userService } from "@/server/users/user.service";
 import { subscriptionService } from "@/server/subscriptions/subscription.service";
 import { SubscribeButton } from "@/components/features/SubscribeButton";
 
-export default async function AbonnementPage() {
+export default async function AbonnementPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ paywall?: string }>;
+}) {
   const db = await createClient();
   const current = await userService.getCurrentUser(db);
   const isPro = current
     ? (await subscriptionService.getStatus(db, current.id).catch(() => null))?.isPro ?? false
     : false;
+  const fromPaywall = (await searchParams)?.paywall === "1";
 
   return (
     <>
@@ -16,6 +21,13 @@ export default async function AbonnementPage() {
         <span className="pill-tag">Abonnement</span>
         <h1>Débloque tout Hibi</h1>
       </div>
+
+      {fromPaywall && !isPro && (
+        <div className="paywall-note">
+          🔒 L&apos;accès à Hibi est réservé aux membres. Choisis une offre ci-dessous pour débloquer
+          toutes tes leçons, du N5 au N1.
+        </div>
+      )}
 
       {isPro ? (
         <div className="pcard" style={{ maxWidth: 520 }}>

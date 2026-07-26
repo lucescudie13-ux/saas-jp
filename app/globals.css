@@ -1039,6 +1039,31 @@
 .legal-foot-copy{color:var(--ink-soft);margin-left:auto}
 @media(max-width:520px){.legal-foot-copy{margin-left:0;width:100%}}
 
+/* Page de téléchargement / installation (PWA). */
+.dl-page{min-height:100dvh;background:var(--paper);color:var(--ink);font-family:var(--sans);display:flex;flex-direction:column}
+.dl-main{max-width:860px;width:100%;margin:0 auto;padding:44px 24px 72px;flex:1;text-align:center;display:flex;flex-direction:column;align-items:center}
+.dl-logo{width:92px;height:92px;border-radius:22px;object-fit:cover;box-shadow:0 10px 30px rgba(34,32,29,.18);margin-bottom:20px}
+.dl-main h1{font-size:clamp(1.9rem,4.5vw,2.6rem);line-height:1.12;margin:0 0 12px;max-width:16ch}
+.dl-lead{color:var(--ink-soft);line-height:1.65;font-size:1.05rem;max-width:56ch;margin:0 0 24px}
+.dl-install{min-height:56px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.dl-btn{width:auto;font-size:1.05rem;padding:15px 30px}
+.dl-ok{background:#E7F3E7;color:#2f6b32;border-radius:12px;padding:14px 20px;font-weight:700}
+.dl-hint{color:var(--ink-soft);background:var(--paper-2);border:1px dashed var(--line-strong);border-radius:12px;padding:14px 18px;line-height:1.6;max-width:52ch}
+.dl-ic{font-size:1.1em}
+.dl-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%;margin:36px 0 8px;text-align:left}
+.dl-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 20px;box-shadow:var(--shadow)}
+.dl-emoji{font-size:32px;line-height:1;display:block;margin-bottom:10px}
+.dl-card h3{font-size:1.05rem;margin:0 0 10px}
+.dl-card ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;color:var(--ink-soft);line-height:1.55;font-size:.95rem}
+.dl-card b{color:var(--ink)}
+.dl-foot{color:var(--ink-soft);font-size:.92rem;margin-top:30px}
+.dl-foot a{color:var(--vermilion-deep);text-decoration:none;font-weight:600}
+.dl-foot a:hover{text-decoration:underline}
+@media(max-width:720px){.dl-cards{grid-template-columns:1fr}}
+
+/* Bannière paywall (redirection vers /abonnement). */
+.paywall-note{background:var(--vermilion-soft);color:var(--vermilion-deep);border:1px solid var(--vermilion);border-radius:12px;padding:14px 18px;font-weight:600;line-height:1.55;max-width:640px;margin-bottom:20px}
+
 .lp{background:var(--paper);color:var(--ink);font-family:var(--sans);overflow-x:hidden}
 .lp .btn{width:auto}
 .lp a{color:inherit}

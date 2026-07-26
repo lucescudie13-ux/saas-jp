@@ -39,6 +39,7 @@ export default function Landing() {
           <a href="#concept">Le concept</a>
           <a href="#methode">La méthode</a>
           <a href="#tarifs">Tarifs</a>
+          <Link href="/telecharger">Télécharger l&apos;app</Link>
         </nav>
         <div className="lp-nav-cta">
           <Link className="lp-nav-login" href="/login">Se connecter</Link>
@@ -55,10 +56,10 @@ export default function Landing() {
             Un dragon grandit avec toi, leçon après leçon — du niveau N5 au N1.
           </p>
           <div className="lp-cta-row">
-            <Link className="btn primary lp-cta-lg" href="/signup">Commencer gratuitement →</Link>
+            <Link className="btn primary lp-cta-lg" href="/signup">Commencer →</Link>
             <a className="btn ghost lp-cta-lg" href="#tarifs">Voir les tarifs</a>
           </div>
-          <div className="lp-hero-trust">🔥 10 minutes par jour suffisent · Commence gratuitement</div>
+          <div className="lp-hero-trust">🔥 10 minutes par jour suffisent · Du N5 au N1</div>
         </div>
 
         <div className="lp-hero-visual">
@@ -193,7 +194,7 @@ export default function Landing() {
         <div className="lp-sec-head">
           <span className="lp-eyebrow">Tarifs</span>
           <h2>Un prix simple. Débloque tout.</h2>
-          <p className="lp-sec-sub">Commence gratuitement, passe à Pro quand tu veux.</p>
+          <p className="lp-sec-sub">Choisis ton offre et débloque tout le japonais, du N5 au N1.</p>
         </div>
         <div className="lp-plans">
           <div className="lp-plan">
@@ -236,7 +237,7 @@ export default function Landing() {
       <section className="lp-final">
         <h2>Ton aventure commence aujourd&apos;hui.</h2>
         <p>De l&apos;œuf au dragon légendaire. Du débutant au bilingue.</p>
-        <Link className="btn primary lp-cta-lg" href="/signup">Commencer gratuitement →</Link>
+        <Link className="btn primary lp-cta-lg" href="/signup">Commencer →</Link>
       </section>
 
       <footer className="lp-footer">
@@ -244,6 +245,7 @@ export default function Landing() {
         <div className="lp-foot-links">
           <Link href="/login">Connexion</Link>
           <a href="#tarifs">Tarifs</a>
+          <Link href="/telecharger">Télécharger</Link>
           <Link href="/conditions">Conditions</Link>
           <Link href="/confidentialite">Confidentialité</Link>
           <Link href="/mentions-legales">Mentions légales</Link>
