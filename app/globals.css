@@ -1064,6 +1064,10 @@
 /* Bannière paywall (redirection vers /abonnement). */
 .paywall-note{background:var(--vermilion-soft);color:var(--vermilion-deep);border:1px solid var(--vermilion);border-radius:12px;padding:14px 18px;font-weight:600;line-height:1.55;max-width:640px;margin-bottom:20px}
 
+/* Bouton « Voir la fiche » sous une flashcard retournée. */
+.flash-details{display:block;margin:14px auto 0;background:var(--paper-2);border:1px solid var(--line-strong);color:var(--ink);font-weight:600;font-size:14px;padding:10px 18px;border-radius:12px;cursor:pointer;font-family:var(--sans);transition:.2s}
+.flash-details:hover{border-color:var(--vermilion);color:var(--vermilion-deep)}
+
 /* Fiche de vocabulaire détaillée (FicheView). */
 .freq-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--paper-2);color:var(--ink-soft);border:1px solid var(--line);margin-left:6px}
 .fiche-readings{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
@@ -1080,6 +1084,17 @@
 .fk-meta{color:var(--ink-soft);font-size:13px}
 .fiche-kanji p{margin:4px 0;line-height:1.6;color:var(--ink-soft)}
 .fiche-kanji p b{color:var(--ink);font-weight:700}
+
+/* Info-bulle de mot (WordText) : survol/clic d'un groupe de kanji. */
+.wt-word{position:relative;cursor:pointer;border-bottom:1px dashed rgba(194,64,47,.45);transition:.15s}
+.wt-word:hover{background:var(--vermilion-soft);border-radius:3px}
+.wt-pop{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);z-index:80;min-width:150px;max-width:250px;background:var(--ink);color:#fff;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;box-shadow:0 8px 24px rgba(0,0,0,.28);text-align:left;white-space:normal;line-height:1.4}
+.wt-pop::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--ink)}
+.wt-read{font-family:var(--jp);font-weight:700;font-size:15px;color:#fff}
+.wt-gloss{font-size:13px;color:rgba(255,255,255,.85)}
+.wt-link{font-size:12.5px;font-weight:700;color:#ffd39a;text-decoration:none;margin-top:2px}
+.wt-link:hover{text-decoration:underline}
+.wt-muted{font-size:12.5px;color:rgba(255,255,255,.6)}
 
 /* Fin de leçon : bandeau « Leçon terminée » + bouton leçon suivante. */
 .lr-complete{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:28px;padding:20px 24px;border-radius:16px;background:linear-gradient(135deg,var(--vermilion-soft),var(--card));border:1px solid var(--vermilion);box-shadow:var(--shadow)}

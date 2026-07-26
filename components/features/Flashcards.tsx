@@ -23,7 +23,7 @@ const RATING_LABEL: Record<SrsRating, string> = {
  * Facile (touches 1–4). Les notes SRS partent en arrière-plan (fire-and-forget)
  * → le passage d'une carte à l'autre est instantané.
  */
-export function Flashcards({ kind, items, onComplete }: { kind: ItemKind; items: FlashcardItem[]; onComplete?: () => void }) {
+export function Flashcards({ kind, items, onComplete, onDetails }: { kind: ItemKind; items: FlashcardItem[]; onComplete?: () => void; onDetails?: (id: string) => void }) {
   const deck = useMemo(() => items, [items]);
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -126,6 +126,12 @@ export function Flashcards({ kind, items, onComplete }: { kind: ItemKind; items:
           </div>
         </div>
       </div>
+
+      {revealed && onDetails && (
+        <button type="button" className="flash-details" onClick={() => onDetails(card.id)}>
+          📖 Voir la fiche détaillée
+        </button>
+      )}
 
       {revealed ? (
         <div className="flash-rate">

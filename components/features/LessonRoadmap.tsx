@@ -239,7 +239,15 @@ function VocabContent({ m, words, onEngage, openView }: { m: CombinedModule; wor
           `Exercices — ${m.lesson.title}`,
           <>
             <p className="lm-intro">Révise chaque mot, puis auto-évalue-toi. La leçon se valide en fin de session.</p>
-            <Flashcards kind="vocab" items={cards} onComplete={onEngage} />
+            <Flashcards
+              kind="vocab"
+              items={cards}
+              onComplete={onEngage}
+              onDetails={(id) => {
+                const w = words.find((x) => x.id === id);
+                if (w) openView(`Fiche · ${w.lemma}`, <FicheView item={w as unknown as FicheItem} verify={<VerifyForm kind="vocab" itemId={w.id} />} />);
+              }}
+            />
           </>,
         )}
       >

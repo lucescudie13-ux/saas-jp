@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { VOCAB_TYPE_LABELS } from "@/lib/constants";
+import { WordText } from "./WordText";
 
 /** Blocs d'analyse d'un kanji (issus des fiches PDF). */
 type KanjiBlock = { char: string; meta?: string; trace?: string; origine?: string; decomp?: string; mnemo?: string };
@@ -87,7 +88,7 @@ export function FicheView({ item, verify }: { item: FicheItem; verify?: ReactNod
             <ul className="examples">
               {examples.map((ex, i) => (
                 <li key={i}>
-                  <div className="ex-jp">{ex.jp}</div>
+                  <div className="ex-jp"><WordText text={ex.jp} /></div>
                   {ex.fr && <div className="ex-fr">{ex.fr}</div>}
                 </li>
               ))}
