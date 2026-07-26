@@ -12,7 +12,7 @@ import type { Comprehension } from "@/lib/comprehension-content";
 import type { VocabItemRow } from "@/types/database.types";
 import { VOCAB_TYPE_LABELS } from "@/lib/constants";
 import { Flashcards } from "./Flashcards";
-import { VocabFiche } from "./VocabFiche";
+import { FicheView, type FicheItem } from "./FicheView";
 import { GrammarRuleView } from "./GrammarRuleView";
 import { LessonExercise } from "./LessonExercise";
 import { ComprehensionView } from "./ComprehensionView";
@@ -326,7 +326,7 @@ function VocabPager({ words, startIndex }: { words: VocabItemRow[]; startIndex: 
           <button className="vpager-btn" disabled={!hasNext} onClick={() => setI(i + 1)}>Suivant ›</button>
         </div>
       )}
-      <VocabFiche key={v.id} item={v} verify={<VerifyForm kind="vocab" itemId={v.id} />} />
+      <FicheView key={v.id} item={v as unknown as FicheItem} verify={<VerifyForm kind="vocab" itemId={v.id} />} />
     </div>
   );
 }

@@ -1064,6 +1064,23 @@
 /* Bannière paywall (redirection vers /abonnement). */
 .paywall-note{background:var(--vermilion-soft);color:var(--vermilion-deep);border:1px solid var(--vermilion);border-radius:12px;padding:14px 18px;font-weight:600;line-height:1.55;max-width:640px;margin-bottom:20px}
 
+/* Fiche de vocabulaire détaillée (FicheView). */
+.freq-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--paper-2);color:var(--ink-soft);border:1px solid var(--line);margin-left:6px}
+.fiche-readings{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.fiche-readings li{display:flex;gap:12px;align-items:baseline}
+.fr-kana{font-family:var(--jp);font-weight:700;color:var(--vermilion-deep);font-size:16px;flex:none;min-width:76px}
+.fr-body{display:flex;flex-direction:column;gap:2px}
+.fr-tr{font-weight:600;color:var(--ink)}
+.fr-prec{color:var(--ink-soft);font-size:.92em;line-height:1.5}
+.fiche-cat{white-space:pre-wrap;color:var(--ink-soft);line-height:1.7}
+.fiche-kanji{padding:14px 0;border-top:1px solid var(--line)}
+.fiche-kanji:first-child{border-top:none;padding-top:0}
+.fk-head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.fk-char{font-family:var(--jp);font-size:34px;font-weight:700;line-height:1;color:var(--ink)}
+.fk-meta{color:var(--ink-soft);font-size:13px}
+.fiche-kanji p{margin:4px 0;line-height:1.6;color:var(--ink-soft)}
+.fiche-kanji p b{color:var(--ink);font-weight:700}
+
 /* Fin de leçon : bandeau « Leçon terminée » + bouton leçon suivante. */
 .lr-complete{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:28px;padding:20px 24px;border-radius:16px;background:linear-gradient(135deg,var(--vermilion-soft),var(--card));border:1px solid var(--vermilion);box-shadow:var(--shadow)}
 .lr-complete-ic{font-size:34px;line-height:1;flex:none}
