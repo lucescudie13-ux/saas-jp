@@ -929,6 +929,9 @@
 .vpager-btn:hover:not(:disabled){border-color:var(--ink);color:var(--ink)}
 .vpager-btn:disabled{opacity:.38;cursor:default}
 .vpager-count{font-size:13px;font-weight:700;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+/* Même barre répétée en bas de fiche (séparateur au-dessus, pas en dessous). */
+.vpager-nav-bottom .vpager-nav{margin-bottom:0;padding-bottom:0;border-bottom:0;
+  margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
 .drawer-hero{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-bottom:18px;clear:both;max-width:100%}
 .dh-glyph{font-family:var(--jp);font-size:clamp(40px,6.5vw,60px);font-weight:900;line-height:1.12;color:var(--ink);max-width:100%;overflow-wrap:anywhere;word-break:normal}
 .dh-meta{display:flex;flex-direction:column;gap:6px;max-width:100%}

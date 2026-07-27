@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { VOCAB_TYPE_LABELS } from "@/lib/constants";
 import { WordText } from "./WordText";
 
@@ -34,7 +33,7 @@ export function hasFiche(item: FicheItem): boolean {
  * lectures & traductions · contexte & usage · exemples · à ne pas confondre ·
  * bloc catégorie · analyse kanji par caractère.
  */
-export function FicheView({ item, verify }: { item: FicheItem; verify?: ReactNode }) {
+export function FicheView({ item }: { item: FicheItem }) {
   const readings = (item.readings || []).filter((r) => r && r.k);
   const examples = (item.examples || []).filter((e) => e && (e.jp || e.fr));
   const kanji = (item.keys || []).filter((k) => k && k.char);
@@ -128,12 +127,6 @@ export function FicheView({ item, verify }: { item: FicheItem; verify?: ReactNod
         </section>
       )}
 
-      {verify && (
-        <section className="block">
-          <h3 className="block-title">Vérifie tes connaissances</h3>
-          <div className="block-body">{verify}</div>
-        </section>
-      )}
     </>
   );
 }

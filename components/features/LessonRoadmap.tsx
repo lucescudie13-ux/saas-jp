@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { Route } from "next";
@@ -16,7 +16,6 @@ import { FicheView, type FicheItem } from "./FicheView";
 import { GrammarRuleView } from "./GrammarRuleView";
 import { LessonExercise } from "./LessonExercise";
 import { ComprehensionView } from "./ComprehensionView";
-import { VerifyForm } from "@/components/forms/VerifyForm";
 import { getValidated, setValidated } from "@/lib/lesson-progress";
 
 type OpenView = (title: string, node: ReactNode) => void;
@@ -254,7 +253,7 @@ function VocabContent({ m, words, done, onEngage, openView }: { m: CombinedModul
               onComplete={onEngage}
               onDetails={(id) => {
                 const w = words.find((x) => x.id === id);
-                if (w) openView(`Fiche · ${w.lemma}`, <FicheView item={w as unknown as FicheItem} verify={<VerifyForm kind="vocab" itemId={w.id} />} />);
+                if (w) openView(`Fiche · ${w.lemma}`, <FicheView item={w as unknown as FicheItem} />);
               }}
             />
           </>,
@@ -320,33 +319,43 @@ function PointsContent({ m, rules, exercises, done, onEngage, openView }: {
 
 /**
  * Fiche vocabulaire en plein écran, avec navigation précédent / suivant
- * (boutons ‹ › ou flèches clavier).
+ * (boutons ‹ › ou flèches clavier). La navigation est répétée en bas de fiche :
+ * on lit jusqu'au bout, on change de mot sans avoir à remonter. Chaque
+ * changement ramène en haut de la nouvelle fiche.
  */
 function VocabPager({ words, startIndex }: { words: VocabItemRow[]; startIndex: number }) {
   const [i, setI] = useState(startIndex);
   const hasPrev = i > 0;
   const hasNext = i < words.length - 1;
 
+  const go = useCallback((next: number) => {
+    setI(next);
+    window.scrollTo({ top: 0 });
+  }, []);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft" && i > 0) setI((n) => n - 1);
-      else if (e.key === "ArrowRight" && i < words.length - 1) setI((n) => n + 1);
+      if (e.key === "ArrowLeft" && i > 0) go(i - 1);
+      else if (e.key === "ArrowRight" && i < words.length - 1) go(i + 1);
     }
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [i, words.length]);
+  }, [i, words.length, go]);
+
+  const nav = (
+    <div className="vpager-nav">
+      <button className="vpager-btn" disabled={!hasPrev} onClick={() => go(i - 1)}>‹ Précédent</button>
+      <span className="vpager-count">{i + 1} / {words.length}</span>
+      <button className="vpager-btn" disabled={!hasNext} onClick={() => go(i + 1)}>Suivant ›</button>
+    </div>
+  );
 
   const v = words[i]!;
   return (
     <div className="vpager">
-      {words.length > 1 && (
-        <div className="vpager-nav">
-          <button className="vpager-btn" disabled={!hasPrev} onClick={() => setI(i - 1)}>‹ Précédent</button>
-          <span className="vpager-count">{i + 1} / {words.length}</span>
-          <button className="vpager-btn" disabled={!hasNext} onClick={() => setI(i + 1)}>Suivant ›</button>
-        </div>
-      )}
-      <FicheView key={v.id} item={v as unknown as FicheItem} verify={<VerifyForm kind="vocab" itemId={v.id} />} />
+      {words.length > 1 && nav}
+      <FicheView key={v.id} item={v as unknown as FicheItem} />
+      {words.length > 1 && <div className="vpager-nav-bottom">{nav}</div>}
     </div>
   );
 }

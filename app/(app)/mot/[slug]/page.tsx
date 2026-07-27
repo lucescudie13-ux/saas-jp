@@ -4,7 +4,6 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { userService } from "@/server/users/user.service";
 import { FicheView, type FicheItem } from "@/components/features/FicheView";
-import { VerifyForm } from "@/components/forms/VerifyForm";
 
 /** Page « fiche » autonome d'un mot du vocabulaire (cible des liens info-bulle). */
 export default async function MotPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -23,7 +22,7 @@ export default async function MotPage({ params }: { params: Promise<{ slug: stri
         <h1>{data.lemma}</h1>
       </div>
       <div className="lr-fullview">
-        <FicheView item={data as unknown as FicheItem} verify={<VerifyForm kind="vocab" itemId={data.id} />} />
+        <FicheView item={data as unknown as FicheItem} />
       </div>
     </>
   );

@@ -39,9 +39,8 @@ export interface VocabFicheData {
  * Corps de la fiche détaillée d'un mot / caractère. Les blocs affichés
  * dépendent des données présentes (une fiche s'adapte à son type). Pour un
  * caractère (kanji), les sections sont numérotées, comme dans la maquette.
- * `verify` (optionnel) est rendu en dernier bloc.
  */
-export function VocabFiche({ item, verify }: { item: VocabFicheData; verify?: ReactNode }) {
+export function VocabFiche({ item }: { item: VocabFicheData }) {
   const traits = item.traits ?? [];
   const readings = item.readings ?? [];
   const keys = item.keys ?? [];
@@ -195,8 +194,6 @@ export function VocabFiche({ item, verify }: { item: VocabFicheData; verify?: Re
       ),
     });
   }
-
-  if (verify) blocks.push({ title: "Vérifie tes connaissances", body: verify });
 
   return (
     <>

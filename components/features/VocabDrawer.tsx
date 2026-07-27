@@ -1,7 +1,6 @@
 "use client";
 
 import type { VocabItemRow } from "@/types/database.types";
-import { VerifyForm } from "@/components/forms/VerifyForm";
 import { VocabFiche } from "./VocabFiche";
 
 // Fiche détaillée d'un mot, en tiroir (réutilise les classes du prototype : .drawer, .block…).
@@ -13,7 +12,7 @@ export function VocabDrawer({ item, onClose }: { item: VocabItemRow | null; onCl
       <div className="drawer-scrim" onClick={onClose} />
       <aside className="drawer open" role="dialog" aria-modal="true">
         <button className="drawer-close" onClick={onClose} aria-label="Fermer">✕</button>
-        <VocabFiche item={item} verify={<VerifyForm kind="vocab" itemId={item.id} />} />
+        <VocabFiche item={item} />
       </aside>
     </>
   );
