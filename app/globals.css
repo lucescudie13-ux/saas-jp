@@ -2191,7 +2191,7 @@
 .map-hint{margin-top:8px;font-size:12.5px;color:var(--ink-faint);text-align:right}
 @media(prefers-reduced-motion:reduce){.map-dragon{animation:none}}
 
-/* — Niveaux empilés : débloqué (interactif) + verrouillés (aperçu) — */
+/* — Niveaux empilés — tous ouverts, leçons en boutons simples — */
 .levels{display:flex;flex-direction:column;gap:26px;margin-top:12px}
 .level-head{display:flex;align-items:center;gap:13px;margin-bottom:12px;padding:0 2px}
 .level-badge{flex:none;width:46px;height:46px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(150deg,var(--vermilion),var(--vermilion-deep));color:#fff;font-weight:800;font-size:16px;letter-spacing:.5px;box-shadow:0 4px 12px rgba(194,64,47,.24)}
@@ -2201,10 +2201,51 @@
 .level-prog{flex:none;font-size:13px;font-weight:800;color:var(--vermilion-deep)}
 .level-unlock{flex:none;width:auto;font-size:12.5px;font-weight:800;padding:8px 13px;background:var(--gold);color:#fff;box-shadow:0 4px 12px rgba(176,132,58,.3)}
 .level-unlock:hover{background:#9c7433;transform:translateY(-1px)}
-.level-block.locked .level-badge{background:var(--ink-faint);box-shadow:none}
-.level-block.locked .level-head-txt b,.level-block.locked .level-head-txt span{color:var(--ink-faint)}
 
-/* — Niveau verrouillé : aperçu flouté + cadenas au centre — */
+/* — Leçons en boutons simples (remplace la carte illustrée) — */
+.lesson-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:10px;
+  padding:16px;border-radius:18px;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow);
+}
+.lesson-btn{
+  position:relative;display:grid;place-items:center;aspect-ratio:1;border-radius:14px;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);text-decoration:none;
+  font-variant-numeric:tabular-nums;transition:transform .15s,box-shadow .15s,border-color .15s,background .15s;
+}
+.lesson-btn:hover{transform:translateY(-2px);border-color:var(--vermilion);box-shadow:var(--shadow)}
+.lesson-btn-n{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.lesson-btn-ck{position:absolute;right:6px;top:5px;font-size:11px;font-weight:800;line-height:1}
+.lesson-btn.done{background:linear-gradient(160deg,#84c273,#3c6b34);border-color:#2f5528;color:#fff}
+.lesson-btn.done:hover{border-color:#2f5528}
+.lesson-btn.current{
+  border-color:var(--vermilion);color:var(--vermilion-deep);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--vermilion) 22%, transparent),var(--shadow);
+}
+.lesson-dragon{position:absolute;left:50%;top:-30px;transform:translateX(-50%);width:34px;height:34px;pointer-events:none;z-index:3;animation:dragon-float 4s ease-in-out infinite}
+.lesson-dragon-img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 5px rgba(27,36,71,.3))}
+.lesson-dragon-emoji{font-size:26px;line-height:1}
+@media(prefers-reduced-motion:reduce){.lesson-dragon{animation:none}}
+
+/* — Bouton d'examen en fin de niveau — */
+.level-exam{
+  margin-top:12px;display:flex;align-items:center;gap:13px;padding:14px 16px;border-radius:16px;
+  text-decoration:none;color:#fff;border:1px solid #5a1a13;
+  background:linear-gradient(150deg,#c2402f,#7f271f);box-shadow:0 6px 16px rgba(127,39,31,.26);
+  transition:transform .15s,box-shadow .15s;
+}
+.level-exam:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(127,39,31,.34)}
+.level-exam-ic{font-size:28px;line-height:1;flex:none}
+.level-exam-txt{display:flex;flex-direction:column;line-height:1.25;flex:1;min-width:0}
+.level-exam-txt b{font-size:15px;font-weight:800}
+.level-exam-txt span{font-size:12.5px;color:rgba(255,255,255,.82)}
+.level-exam-go{flex:none;font-size:19px;font-weight:800}
+
+@media(max-width:560px){
+  .lesson-grid{grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px;padding:12px}
+  .lesson-btn-n{font-size:15px}
+}
+
+/* — Niveau verrouillé : aperçu flouté + cadenas au centre (conservé, inutilisé) — */
 .map-preview{position:relative;margin-top:10px;height:230px;border-radius:18px;overflow:hidden;border:1px solid var(--line);
   box-shadow:var(--shadow);background-color:#0e1222;background-size:cover;background-position:center 42%;background-repeat:no-repeat}
 .map-lock-scrim{position:absolute;inset:0;display:grid;place-items:center;text-align:center;backdrop-filter:blur(3px);background:rgba(20,18,15,.46)}
