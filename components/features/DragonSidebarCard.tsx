@@ -6,7 +6,7 @@ import type { Route } from "next";
 import { JLPT_LEVELS, type JlptLevel } from "@/lib/constants";
 import { getLevelLessons } from "@/lib/curriculum";
 import { getValidated } from "@/lib/lesson-progress";
-import { computeDragon, type DragonStage } from "@/lib/dragon";
+import { computeDragon, countSteps, type DragonStage } from "@/lib/dragon";
 import { computeSkills } from "@/lib/skills";
 import { getDragonName, DEFAULT_DRAGON_NAME } from "@/lib/dragon-name";
 
@@ -55,7 +55,7 @@ export function DragonSidebarCard({ level }: { level: JlptLevel }) {
     for (const lv of JLPT_LEVELS) for (const l of getLevelLessons(lv)) for (const c of l.codes) set.add(c);
     return set;
   }, []);
-  const lessonsDone = useMemo(() => [...validated].filter((c) => allCodes.has(c)).length, [validated, allCodes]);
+  const lessonsDone = useMemo(() => countSteps(validated, allCodes), [validated, allCodes]);
 
   const d = computeDragon(lessonsDone, allCodes.size);
   const { skills, general } = computeSkills(validated, level);

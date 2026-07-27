@@ -28,3 +28,11 @@ export async function POST(req: Request) {
   }
   return ok({ code, done });
 }
+
+/** Réinitialise toute la progression du compte (remet le dragon à zéro). */
+export async function DELETE() {
+  const ctx = await getAuthedContext();
+  if (!ctx) return unauthorized();
+  await ctx.db.from("user_lesson_codes").delete().eq("user_id", ctx.user.id);
+  return ok({ reset: true });
+}

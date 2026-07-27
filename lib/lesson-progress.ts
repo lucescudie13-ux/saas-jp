@@ -46,6 +46,26 @@ export function setValidated(code: string, done: boolean): Set<string> {
   return set;
 }
 
+/**
+ * Remet la progression à zéro : cache local ET compte. Le dragon repart au
+ * niveau 1 / 0 XP et toutes les leçons redeviennent « à faire ».
+ */
+export async function resetValidated(): Promise<void> {
+  if (typeof window === "undefined") return;
+  persistLocal(new Set());
+  try {
+    await fetch("/api/lesson-codes", { method: "DELETE" });
+  } catch {
+    /* hors ligne : le cache local est déjà vidé */
+  }
+  // Re-notifie après la réponse serveur (l'UI se rafraîchit dans tous les cas).
+  try {
+    window.dispatchEvent(new Event("hibi-progress"));
+  } catch {
+    /* ignore */
+  }
+}
+
 /** Fusionne les codes validés côté serveur dans le cache local (au démarrage). */
 export async function syncValidatedFromServer(): Promise<void> {
   if (typeof window === "undefined") return;

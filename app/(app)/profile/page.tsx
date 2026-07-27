@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { ProfileForm } from "@/components/forms/ProfileForm";
 import { DragonNameField } from "@/components/forms/DragonNameField";
+import { ResetProgressButton } from "@/components/forms/ResetProgressButton";
 
 export default async function ProfilePage() {
   const db = await createClient();
@@ -25,6 +26,17 @@ export default async function ProfilePage() {
         <ProfileForm profile={current.profile} />
 
         <DragonNameField />
+
+        <div className="pcard">
+          <h3>Progression</h3>
+          <p style={{ color: "var(--ink-soft)" }}>
+            10 XP par partie de leçon ou session d&apos;exercices terminée, 100 XP par niveau
+            de dragon.
+          </p>
+          <div style={{ marginTop: 14 }}>
+            <ResetProgressButton />
+          </div>
+        </div>
 
         <div className="pcard">
           <h3>Compte</h3>

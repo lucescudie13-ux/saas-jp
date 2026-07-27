@@ -6,7 +6,7 @@ import type { Route } from "next";
 import { JLPT_LEVELS, type JlptLevel } from "@/lib/constants";
 import { getLevelLessons, TRACK_LABELS } from "@/lib/curriculum";
 import { getValidated } from "@/lib/lesson-progress";
-import { computeDragon, DRAGON_STAGES, type DragonStage } from "@/lib/dragon";
+import { computeDragon, countSteps, DRAGON_STAGES, type DragonStage } from "@/lib/dragon";
 import { getDragonName, DEFAULT_DRAGON_NAME } from "@/lib/dragon-name";
 import { SkillStats } from "./SkillStats";
 
@@ -75,7 +75,7 @@ export function DragonView({ level, variant = "full" }: { level: JlptLevel; vari
   }, []);
 
   const lessonsDone = useMemo(
-    () => [...validated].filter((c) => allCodes.has(c)).length,
+    () => countSteps(validated, allCodes),
     [validated, allCodes],
   );
 

@@ -1370,6 +1370,18 @@
 .btn.sm{padding:8px 14px;font-size:13px}
 .btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:11px 18px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
 .btn.ghost:hover{border-color:var(--vermilion);color:var(--vermilion-deep)}
+.btn.danger{background:var(--vermilion);color:#fff;border:1px solid var(--vermilion-deep);box-shadow:0 4px 12px rgba(194,64,47,.24)}
+.btn.danger:hover{background:var(--vermilion-deep)}
+.btn:disabled{opacity:.6;cursor:default}
+
+/* — Fin de partie (+10 XP) dans une leçon — */
+.lr-step-cta{margin-top:18px}
+.lr-step-done{margin-top:18px;font-size:13.5px;font-weight:800;color:#3c6b34}
+
+/* — Remise à zéro de la progression (profil) — */
+.reset-confirm p{font-size:13.5px;line-height:1.5;color:var(--ink-soft);margin-bottom:12px}
+.reset-actions{display:flex;flex-wrap:wrap;gap:8px}
+.reset-done{font-size:13.5px;font-weight:800;color:#3c6b34}
 
 
 /* ============ Tableau de bord (KPI, graphe, leçon du jour) ============ */

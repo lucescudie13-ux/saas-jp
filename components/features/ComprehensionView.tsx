@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import type { Comprehension } from "@/lib/comprehension-content";
 import { AnswerCard } from "./AnswerCard";
 
 /** Compréhension écrite : le texte, puis les questions (saisie + auto-évaluation). */
-export function ComprehensionView({ c }: { c: Comprehension }) {
+export function ComprehensionView({ c, onComplete }: { c: Comprehension; onComplete?: () => void }) {
+  const [done, setDone] = useState(false);
   const paragraphs = c.text.split(/\n\s*\n+/).filter((p) => p.trim());
   return (
     <div className="comp">
@@ -21,6 +23,19 @@ export function ComprehensionView({ c }: { c: Comprehension }) {
       {c.questions.map((q, i) => (
         <AnswerCard key={i} prompt={q} answer={c.answers[i] ?? ""} />
       ))}
+      {/* La session ne rapporte ses 10 XP qu'une fois réellement terminée. */}
+      {onComplete && (
+        done
+          ? <p className="lr-step-done">✓ Session terminée — 10 XP gagnés</p>
+          : (
+            <button
+              className="btn primary sm lr-step-cta"
+              onClick={() => { setDone(true); onComplete(); }}
+            >
+              J&apos;ai terminé cet exercice (+10 XP)
+            </button>
+          )
+      )}
     </div>
   );
 }

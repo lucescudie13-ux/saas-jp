@@ -6,7 +6,7 @@ import type { Route } from "next";
 import { JLPT_LEVELS, LEVEL_LABELS, type JlptLevel } from "@/lib/constants";
 import { getLevelLessons } from "@/lib/curriculum";
 import { getValidated } from "@/lib/lesson-progress";
-import { computeDragon, type DragonStage } from "@/lib/dragon";
+import { computeDragon, countSteps, type DragonStage } from "@/lib/dragon";
 
 /**
  * Parcours d'étude — tous les niveaux JLPT (N5 → N1) sont ouverts : l'accès aux
@@ -47,7 +47,7 @@ export function LessonPath() {
     for (const lv of JLPT_LEVELS) for (const l of getLevelLessons(lv)) for (const c of l.codes) set.add(c);
     return set;
   }, []);
-  const dragon = computeDragon([...validated].filter((c) => allCodes.has(c)).length, allCodes.size);
+  const dragon = computeDragon(countSteps(validated, allCodes), allCodes.size);
 
   return (
     <div className="levels">
