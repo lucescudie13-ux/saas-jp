@@ -1399,9 +1399,19 @@
 .btn.danger:hover{background:var(--vermilion-deep)}
 .btn:disabled{opacity:.6;cursor:default}
 
-/* — Fin de partie (+10 XP) dans une leçon — */
-.lr-step-cta{margin-top:18px}
+/* — État de validation d'une partie de leçon — */
 .lr-step-done{margin-top:18px;font-size:13.5px;font-weight:800;color:#3c6b34}
+.lr-step-todo{margin-top:18px;font-size:13px;color:var(--ink-faint);font-style:italic}
+
+/* Exercice de la partie 2 pas encore écrit : ouvrable, mais non validable. */
+.lr-mod-btn.soon{opacity:.72}
+.lr-mod-soon{flex:none;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--ink-faint);background:var(--paper-2);border-radius:999px;padding:4px 10px;white-space:nowrap}
+
+/* Mot de vocabulaire dont la fiche a déjà été consultée → ligne grisée. */
+.vrow.seen .vglyph,.vrow.seen .vreading,.vrow.seen .vgloss,.vrow.seen .vnum{color:var(--ink-faint)}
+.vrow.seen .vtype{opacity:.6}
+.vrow.seen:hover .vglyph,.vrow.seen:hover .vreading,.vrow.seen:hover .vgloss{color:var(--ink-soft)}
 
 /* — Remise à zéro de la progression (profil) — */
 .reset-confirm p{font-size:13.5px;line-height:1.5;color:var(--ink-soft);margin-bottom:12px}

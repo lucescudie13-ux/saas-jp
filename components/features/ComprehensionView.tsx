@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Comprehension } from "@/lib/comprehension-content";
 import { AnswerCard } from "./AnswerCard";
+import { WordText } from "./WordText";
 
 /** Compréhension écrite : le texte, puis les questions (saisie + auto-évaluation). */
 export function ComprehensionView({ c, onComplete }: { c: Comprehension; onComplete?: () => void }) {
@@ -13,11 +14,11 @@ export function ComprehensionView({ c, onComplete }: { c: Comprehension; onCompl
       {c.title && <h3 className="comp-title">{c.title}</h3>}
       <div className="comp-text">
         {paragraphs.map((p, i) => (
-          <p key={i}>{p.trim()}</p>
+          <p key={i}><WordText text={p.trim()} /></p>
         ))}
       </div>
       {c.targetWords.length > 0 && (
-        <p className="comp-words"><b>Mots de la leçon :</b> {c.targetWords.join("・")}</p>
+        <p className="comp-words"><b>Mots de la leçon :</b> <WordText text={c.targetWords.join("・")} /></p>
       )}
       <div className="lm-subh">Questions de compréhension</div>
       {c.questions.map((q, i) => (

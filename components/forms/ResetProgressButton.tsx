@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { resetValidated } from "@/lib/lesson-progress";
+import { clearSeen } from "@/lib/vocab-seen";
 
 /**
  * Remise à zéro de la progression : leçons validées, XP et niveau du dragon.
@@ -14,6 +15,7 @@ export function ResetProgressButton() {
   async function reset() {
     setBusy(true);
     await resetValidated();
+    clearSeen();
     setBusy(false);
     setStep("done");
   }

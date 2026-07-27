@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { VOCAB_TYPE_LABELS } from "@/lib/constants";
+import { WordText } from "./WordText";
 
 /**
  * Données d'une fiche de vocabulaire (sous-ensemble de VocabItemRow suffisant
@@ -117,7 +118,7 @@ export function VocabFiche({ item }: { item: VocabFicheData }) {
   }
 
   if (item.usage) {
-    blocks.push({ title: "Contexte & usage", body: <p>{item.usage}</p> });
+    blocks.push({ title: "Contexte & usage", body: <p><WordText text={item.usage} /></p> });
   }
 
   if (item.decomp || keys.length > 0) {
@@ -158,7 +159,7 @@ export function VocabFiche({ item }: { item: VocabFicheData }) {
         <ul className="examples">
           {examples.map((ex, i) => (
             <li key={i}>
-              <div className="ex-jp">{ex.jp}</div>
+              <div className="ex-jp"><WordText text={ex.jp} /></div>
               <div className="ex-yomi">{ex.yomi}</div>
               <div className="ex-fr">{ex.fr}</div>
             </li>
@@ -173,7 +174,7 @@ export function VocabFiche({ item }: { item: VocabFicheData }) {
       title: item.confuseTitle ?? "À ne pas confondre",
       body: (
         <ul className="confuse">
-          {confuse.map((c, i) => (<li key={i}><b>{c.g}</b> ({c.n}) — {c.d}</li>))}
+          {confuse.map((c, i) => (<li key={i}><b>{c.g}</b> ({c.n}) — <WordText text={c.d} /></li>))}
         </ul>
       ),
     });

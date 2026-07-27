@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
-import { JLPT_LEVELS, type JlptLevel } from "@/lib/constants";
+import { type JlptLevel } from "@/lib/constants";
 import { getLevelLessons, TRACK_LABELS } from "@/lib/curriculum";
 import { getValidated } from "@/lib/lesson-progress";
-import { computeDragon, countSteps, DRAGON_STAGES, type DragonStage } from "@/lib/dragon";
+import { computeDragon, xpFromValidated, DRAGON_STAGES, type DragonStage } from "@/lib/dragon";
 import { getDragonName, DEFAULT_DRAGON_NAME } from "@/lib/dragon-name";
 import { SkillStats } from "./SkillStats";
 
@@ -62,24 +62,9 @@ export function DragonView({ level, variant = "full" }: { level: JlptLevel; vari
     };
   }, []);
 
-  // Ensemble de tous les codes de modules du curriculum (tous niveaux) : sert
-  // à ne compter comme XP que les vraies leçons validées.
-  const allCodes = useMemo(() => {
-    const set = new Set<string>();
-    for (const lvl of JLPT_LEVELS) {
-      for (const lesson of getLevelLessons(lvl)) {
-        for (const code of lesson.codes) set.add(code);
-      }
-    }
-    return set;
-  }, []);
-
-  const lessonsDone = useMemo(
-    () => countSteps(validated, allCodes),
-    [validated, allCodes],
-  );
-
-  const d = computeDragon(lessonsDone, allCodes.size);
+  // L'XP vient des parties validées : chaque leçon vaut 100 XP, partagés entre
+  // ses parties (cf. lib/dragon.ts).
+  const d = computeDragon(useMemo(() => xpFromValidated(validated), [validated]));
   const isLegendary = d.stage.key === "legendary";
 
   // Prochaine leçon à faire dans le niveau de l'utilisateur.

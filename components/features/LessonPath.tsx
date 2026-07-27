@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { JLPT_LEVELS, LEVEL_LABELS, type JlptLevel } from "@/lib/constants";
 import { getLevelLessons } from "@/lib/curriculum";
 import { getValidated } from "@/lib/lesson-progress";
-import { computeDragon, countSteps, type DragonStage } from "@/lib/dragon";
+import { computeDragon, xpFromValidated, type DragonStage } from "@/lib/dragon";
 
 /**
  * Parcours d'étude — tous les niveaux JLPT (N5 → N1) sont ouverts : l'accès aux
@@ -42,12 +42,7 @@ export function LessonPath() {
     };
   }, []);
 
-  const allCodes = useMemo(() => {
-    const set = new Set<string>();
-    for (const lv of JLPT_LEVELS) for (const l of getLevelLessons(lv)) for (const c of l.codes) set.add(c);
-    return set;
-  }, []);
-  const dragon = computeDragon(countSteps(validated, allCodes), allCodes.size);
+  const dragon = computeDragon(xpFromValidated(validated));
 
   return (
     <div className="levels">

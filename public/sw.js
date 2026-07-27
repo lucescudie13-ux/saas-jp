@@ -2,7 +2,7 @@
 // ressources statiques. IMPORTANT : on ne met JAMAIS en cache le HTML ni les
 // requêtes /api (contenu authentifié) pour éviter de servir la page d'un
 // utilisateur à un autre. Seuls les assets immuables sont mis en cache.
-const CACHE = "hibi-static-v4";
+const CACHE = "hibi-static-v5";
 const PRECACHE = ["/icons/icon-192.png", "/icons/icon-512.png", "/logo.webp"];
 
 self.addEventListener("install", (e) => {

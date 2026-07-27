@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { WordText } from "./WordText";
 
 /**
  * Question de compréhension : l'apprenant écrit sa réponse, la vérifie
@@ -13,7 +14,7 @@ export function AnswerCard({ prompt, answer }: { prompt: string; answer: string 
 
   return (
     <div className="qcard">
-      <div className="qprompt">{prompt}</div>
+      <div className="qprompt"><WordText text={prompt} /></div>
       <textarea
         className="ex-input"
         rows={2}
@@ -29,7 +30,7 @@ export function AnswerCard({ prompt, answer }: { prompt: string; answer: string 
         </div>
       ) : (
         <>
-          <div className="qanswer">{answer}</div>
+          <div className="qanswer"><WordText text={answer} /></div>
           {verdict ? (
             <div className={`ac-verdict ${verdict}`}>{verdict === "good" ? "✓ Correct" : "✕ À revoir"}</div>
           ) : (

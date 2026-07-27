@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { contentService } from "@/server/content/content.service";
 import { LevelTabs } from "@/components/features/LevelTabs";
+import { WordText } from "@/components/features/WordText";
 import { JLPT_LEVELS, type JlptLevel } from "@/lib/constants";
 
 export default async function ReadingPage({ searchParams }: { searchParams: Promise<{ level?: string }> }) {
@@ -27,7 +28,7 @@ export default async function ReadingPage({ searchParams }: { searchParams: Prom
                 <span className="jlpt-badge">{r.level}</span>
                 <strong style={{ fontSize: 17 }}>{r.title}</strong>
               </div>
-              <div className="read-body">{r.body}</div>
+              <div className="read-body"><WordText text={r.body} /></div>
               {r.translation && (
                 <details style={{ marginTop: 10 }}>
                   <summary style={{ cursor: "pointer", color: "var(--vermilion-deep)", fontWeight: 700 }}>Voir la traduction</summary>

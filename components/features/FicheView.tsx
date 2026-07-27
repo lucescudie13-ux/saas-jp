@@ -76,7 +76,7 @@ export function FicheView({ item }: { item: FicheItem }) {
       {item.usage && (
         <section className="block">
           <h3 className="block-title">Contexte et usage</h3>
-          <div className="block-body"><p>{item.usage}</p></div>
+          <div className="block-body"><p><WordText text={item.usage} /></p></div>
         </section>
       )}
 
@@ -99,7 +99,7 @@ export function FicheView({ item }: { item: FicheItem }) {
       {confuse.length > 0 && (
         <section className="block">
           <h3 className="block-title">À ne pas confondre</h3>
-          <div className="block-body">{confuse.map((d, i) => <p key={i}>{d}</p>)}</div>
+          <div className="block-body">{confuse.map((d, i) => <p key={i}><WordText text={d} /></p>)}</div>
         </section>
       )}
 
@@ -117,10 +117,10 @@ export function FicheView({ item }: { item: FicheItem }) {
             {kanji.map((k, i) => (
               <div className="fiche-kanji" key={i}>
                 <div className="fk-head"><span className="fk-char">{k.char}</span>{k.meta && <span className="fk-meta">{k.meta}</span>}</div>
-                {k.trace && <p><b>Ordre de tracé — </b>{k.trace}</p>}
-                {k.origine && <p><b>Origine — </b>{k.origine}</p>}
-                {k.decomp && <p><b>Décomposition &amp; clé — </b>{k.decomp}</p>}
-                {k.mnemo && <p><b>Mnémotechnique — </b>{k.mnemo}</p>}
+                {k.trace && <p><b>Ordre de tracé — </b><WordText text={k.trace} /></p>}
+                {k.origine && <p><b>Origine — </b><WordText text={k.origine} /></p>}
+                {k.decomp && <p><b>Décomposition &amp; clé — </b><WordText text={k.decomp} /></p>}
+                {k.mnemo && <p><b>Mnémotechnique — </b><WordText text={k.mnemo} /></p>}
               </div>
             ))}
           </div>

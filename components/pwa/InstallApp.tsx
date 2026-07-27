@@ -7,12 +7,19 @@ type BIPEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 };
 
-/** Bloc d'installation de la PWA : bouton natif quand disponible, sinon consignes. */
+/**
+ * Bloc d'installation de la PWA. Le bouton est TOUJOURS présent et cliquable :
+ * quand le navigateur propose l'installation native, il la déclenche ; sinon il
+ * déplie la marche à suivre pour ce navigateur (iOS, Chrome/Edge, autres).
+ * Avant, le bouton n'apparaissait que si `beforeinstallprompt` s'était déclenché
+ * — c'est-à-dire presque jamais au premier chargement.
+ */
 export function InstallApp() {
   const [deferred, setDeferred] = useState<BIPEvent | null>(null);
   const [installed, setInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
   const [done, setDone] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     const ua = navigator.userAgent || "";
@@ -36,28 +43,45 @@ export function InstallApp() {
   }, []);
 
   async function install() {
-    if (!deferred) return;
-    await deferred.prompt();
-    const { outcome } = await deferred.userChoice;
-    if (outcome === "accepted") setDone(true);
-    setDeferred(null);
+    // Invite native si le navigateur nous l'a proposée…
+    if (deferred) {
+      await deferred.prompt();
+      const { outcome } = await deferred.userChoice;
+      if (outcome === "accepted") setDone(true);
+      setDeferred(null);
+      return;
+    }
+    // …sinon on explique comment faire à la main.
+    setShowHelp((s) => !s);
+  }
+
+  if (installed || done) {
+    return (
+      <div className="dl-install">
+        <div className="dl-ok">✓ L&apos;application est installée. Lance-la depuis ton écran d&apos;accueil.</div>
+      </div>
+    );
   }
 
   return (
     <div className="dl-install">
-      {installed || done ? (
-        <div className="dl-ok">✓ L&apos;application est installée. Lance-la depuis ton écran d&apos;accueil.</div>
-      ) : deferred ? (
-        <button className="btn primary dl-btn" onClick={install}>⬇️ Installer l&apos;application</button>
-      ) : isIOS ? (
+      <button className="btn primary dl-btn" onClick={install} aria-expanded={showHelp}>
+        ⬇️ Installer l&apos;application
+      </button>
+
+      {showHelp && !deferred && (
         <div className="dl-hint">
-          Sur iPhone / iPad : appuie sur <b>Partager</b> <span className="dl-ic">⬆️</span> en bas de Safari,
-          puis choisis <b>« Sur l&apos;écran d&apos;accueil »</b>.
-        </div>
-      ) : (
-        <div className="dl-hint">
-          Ouvre ce site dans <b>Chrome</b> ou <b>Edge</b>, puis utilise le menu <b>⋮ → Installer l&apos;application</b>
-          {" "}(ou l&apos;icône d&apos;installation dans la barre d&apos;adresse).
+          {isIOS ? (
+            <>
+              Sur iPhone / iPad : appuie sur <b>Partager</b> <span className="dl-ic">⬆️</span> en bas de Safari,
+              puis choisis <b>« Sur l&apos;écran d&apos;accueil »</b>.
+            </>
+          ) : (
+            <>
+              Ouvre ce site dans <b>Chrome</b> ou <b>Edge</b>, puis utilise le menu <b>⋮ → Installer l&apos;application</b>
+              {" "}(ou l&apos;icône d&apos;installation dans la barre d&apos;adresse).
+            </>
+          )}
         </div>
       )}
     </div>

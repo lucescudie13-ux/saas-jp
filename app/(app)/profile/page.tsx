@@ -30,8 +30,9 @@ export default async function ProfilePage() {
         <div className="pcard">
           <h3>Progression</h3>
           <p style={{ color: "var(--ink-soft)" }}>
-            10 XP par partie de leçon ou session d&apos;exercices terminée, 100 XP par niveau
-            de dragon.
+            Une leçon terminée = 100 XP = un niveau de dragon. Ces 100 XP sont partagés
+            entre ses parties (33 / 33 / 34 pour vocabulaire + grammaire + conjugaison),
+            et chaque partie se valide en faisant ses exercices jusqu&apos;au bout.
           </p>
           <div style={{ marginTop: 14 }}>
             <ResetProgressButton />

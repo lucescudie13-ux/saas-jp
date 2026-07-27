@@ -1,17 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { VocabItemRow } from "@/types/database.types";
 import type { VocabByLesson } from "@/server/content/content.types";
 import { VOCAB_TYPE_LABELS } from "@/lib/constants";
+import { getSeen, markSeen, onSeenChange } from "@/lib/vocab-seen";
 import { VocabDrawer } from "./VocabDrawer";
 
 type Sort = "list" | "lesson" | "theme";
 
-/** Une ligne de mot (réutilisée dans la vue liste et la vue par leçon). */
-function VocabRow({ v, num, onClick }: { v: VocabItemRow; num: number; onClick: () => void }) {
+/** Une ligne de mot (réutilisée dans la vue liste et la vue par leçon).
+ * `seen` = fiche déjà consultée → la ligne passe en gris. */
+function VocabRow({ v, num, seen, onClick }: { v: VocabItemRow; num: number; seen: boolean; onClick: () => void }) {
   return (
-    <li className="vrow" onClick={onClick}>
+    <li className={`vrow ${seen ? "seen" : ""}`} onClick={onClick} title={seen ? "Fiche déjà consultée" : undefined}>
       <span className="vnum">{num}</span>
       <span className="vglyph">{v.lemma}</span>
       <span className="vreading">{v.reading ?? ""}</span>
@@ -27,6 +29,16 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
   const [sort, setSort] = useState<Sort>("list");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<VocabItemRow | null>(null);
+  const [seen, setSeen] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const refresh = () => setSeen(getSeen());
+    refresh();
+    return onSeenChange(refresh);
+  }, []);
+
+  // Ouvrir une fiche = l'avoir vue (elle grise dans la liste).
+  const open = (v: VocabItemRow) => { markSeen(v.id); setSelected(v); };
 
   const hasLessons = byLesson.groups.length > 0;
 
@@ -105,7 +117,7 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
       ) : sort === "list" ? (
         <ul className="vlist">
           {listItems.map((v, i) => (
-            <VocabRow key={v.id} v={v} num={i + 1} onClick={() => setSelected(v)} />
+            <VocabRow key={v.id} v={v} num={i + 1} seen={seen.has(v.id)} onClick={() => open(v)} />
           ))}
         </ul>
       ) : sort === "theme" ? (
@@ -118,7 +130,7 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
               </h2>
               <ul className="vlist">
                 {vocab.map((v, i) => (
-                  <VocabRow key={v.id} v={v} num={i + 1} onClick={() => setSelected(v)} />
+                  <VocabRow key={v.id} v={v} num={i + 1} seen={seen.has(v.id)} onClick={() => open(v)} />
                 ))}
               </ul>
             </section>
@@ -134,7 +146,7 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
               </h2>
               <ul className="vlist">
                 {vocab.map((v, i) => (
-                  <VocabRow key={v.id} v={v} num={i + 1} onClick={() => setSelected(v)} />
+                  <VocabRow key={v.id} v={v} num={i + 1} seen={seen.has(v.id)} onClick={() => open(v)} />
                 ))}
               </ul>
             </section>
@@ -148,7 +160,7 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
               </h2>
               <ul className="vlist">
                 {ungrouped.map((v, i) => (
-                  <VocabRow key={v.id} v={v} num={i + 1} onClick={() => setSelected(v)} />
+                  <VocabRow key={v.id} v={v} num={i + 1} seen={seen.has(v.id)} onClick={() => open(v)} />
                 ))}
               </ul>
             </section>

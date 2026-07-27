@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { WordText } from "./WordText";
 
 export interface TranslationItem {
   /** Phrase japonaise à traduire. */
@@ -90,7 +91,7 @@ export function TranslationExercise({
           {items.map((it, i) => (
             <li key={i} className={results[i] === "good" ? "good" : "again"}>
               <span className="ex-recap-mark">{results[i] === "good" ? "✓" : "✕"}</span>
-              <span className="ex-recap-jp">{it.jp}</span>
+              <span className="ex-recap-jp"><WordText text={it.jp} /></span>
               <span className="ex-recap-fr">{it.answer}</span>
             </li>
           ))}
@@ -112,8 +113,12 @@ export function TranslationExercise({
       <div className="ex-card">
         <div className="ex-prompt-label">Traduis en {label}</div>
 
-        {/* Consigne : japonais (JP → FR) ou français (FR → JP) */}
-        {jpToFr ? <p className="ex-jp">{current.jp}</p> : <p className="ex-prompt-fr">{current.answer}</p>}
+        {/* Consigne : japonais (JP → FR) ou français (FR → JP).
+            Le dictionnaire au survol n'apparaît qu'après correction : sur la
+            consigne JP → FR, il donnerait directement la réponse. */}
+        {jpToFr
+          ? <p className="ex-jp">{revealed ? <WordText text={current.jp} /> : current.jp}</p>
+          : <p className="ex-prompt-fr">{current.answer}</p>}
 
         {/* Lecture kana : indice au sens JP → FR seulement (elle révélerait la réponse en FR → JP) */}
         {jpToFr && current.reading && (
@@ -145,7 +150,7 @@ export function TranslationExercise({
                 <p className="ex-answer-fr">{current.answer}</p>
               ) : (
                 <>
-                  <p className="ex-jp">{current.jp}</p>
+                  <p className="ex-jp"><WordText text={current.jp} /></p>
                   {current.reading && <p className="ex-reading">{current.reading}</p>}
                 </>
               )}

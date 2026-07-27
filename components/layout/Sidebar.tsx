@@ -31,6 +31,7 @@ const TRAINING: Item[] = [
 
 const ACCOUNT: Item[] = [
   { href: "/vrac" as Route, label: "Brouillon", icon: "🗒️" },
+  { href: "/telecharger" as Route, label: "Télécharger l'app", icon: "⬇️" },
   { href: "/profile", label: "Profil", icon: "⚙️" },
 ];
 

@@ -17,6 +17,7 @@ import { GrammarRuleView } from "./GrammarRuleView";
 import { LessonExercise } from "./LessonExercise";
 import { ComprehensionView } from "./ComprehensionView";
 import { getValidated, setValidated } from "@/lib/lesson-progress";
+import { getSeen, markSeen, onSeenChange } from "@/lib/vocab-seen";
 
 type OpenView = (title: string, node: ReactNode) => void;
 
@@ -77,10 +78,11 @@ export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExer
     return () => window.removeEventListener("popstate", onPop);
   }, []);
 
-  // NOTE : rien n'est validé automatiquement. Une partie n'est terminée (et ne
-  // rapporte ses 10 XP) que lorsque l'utilisateur la termine réellement — fin
-  // d'une session d'exercices, ou bouton « Partie terminée ». Un module sans
-  // contenu reste donc « à faire », comme il se doit.
+  // NOTE : rien n'est validé automatiquement, et il n'y a pas de validation
+  // manuelle. Une partie se valide UNIQUEMENT en faisant ses exercices jusqu'au
+  // bout : toutes les flashcards pour le vocabulaire, la série de traduction
+  // pour la grammaire / conjugaison. Un module sans exercices reste donc « à
+  // faire » tant que son contenu n'est pas écrit.
 
   // ---- Vue plein écran (sommet de la pile) ----
   if (stack.length > 0) {
@@ -97,10 +99,9 @@ export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExer
   // Contenu plein écran d'un module d'apprentissage.
   const moduleContent = (m: CombinedModule): ReactNode => {
     const onEngage = () => markDone(m.lesson.code);
-    const done = validated.has(m.lesson.code);
-    if (m.track === "vocab") return <VocabContent m={m} words={vocab} done={done} onEngage={onEngage} openView={openView} />;
-    if (m.track === "grammar") return <PointsContent m={m} rules={grammar} exercises={grammarExercises} done={done} onEngage={onEngage} openView={openView} />;
-    if (m.track === "conjugation") return <PointsContent m={m} rules={conjugation} exercises={conjExercises} done={done} onEngage={onEngage} openView={openView} />;
+    if (m.track === "vocab") return <VocabContent m={m} words={vocab} onEngage={onEngage} openView={openView} />;
+    if (m.track === "grammar") return <PointsContent m={m} rules={grammar} exercises={grammarExercises} onEngage={onEngage} openView={openView} />;
+    if (m.track === "conjugation") return <PointsContent m={m} rules={conjugation} exercises={conjExercises} onEngage={onEngage} openView={openView} />;
     return <p className="lr-mod-note">Contenu à venir.</p>;
   };
 
@@ -150,15 +151,17 @@ export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExer
           {PART2.map((ex) => {
             const code = `EX:${lesson.level}${lesson.num}:${ex.key}`;
             const done = validated.has(code);
-            const real = ex.title === "Compréhension écrite" && comprehension;
-            // La session ne rapporte ses XP qu'une fois terminée, pas à l'ouverture.
+            // Seuls les exercices réellement écrits sont validables ; les autres
+            // arrivent plus tard et restent en « Bientôt ».
+            const real = ex.key === "comp-ecrite" && comprehension;
+            // La session ne se valide qu'une fois terminée, pas à l'ouverture.
             const node = real
               ? <ComprehensionView c={comprehension} onComplete={() => markDone(code)} />
               : <ExercisePlaceholder ex={ex} />;
             return (
               <button
                 key={ex.key}
-                className={`lr-mod lr-mod-btn ${done ? "done" : ""}`}
+                className={`lr-mod lr-mod-btn ${done ? "done" : ""} ${real ? "" : "soon"}`}
                 onClick={() => openView(ex.title, node)}
               >
                 <div className="lr-mod-top">
@@ -167,9 +170,13 @@ export function LessonRoadmap({ lesson, vocab, grammar, conjugation, grammarExer
                     <span className="lr-mod-track">Exercice</span>
                     <span className="lr-mod-title">{ex.title}</span>
                   </div>
-                  {done
-                    ? <span className="done-badge">Validé</span>
-                    : <span className="lr-mod-caret" aria-hidden>›</span>}
+                  {done ? (
+                    <span className="done-badge">Validé</span>
+                  ) : real ? (
+                    <span className="lr-mod-caret" aria-hidden>›</span>
+                  ) : (
+                    <span className="lr-mod-soon">Bientôt</span>
+                  )}
                 </div>
               </button>
             );
@@ -207,20 +214,32 @@ function ExercisePlaceholder({ ex }: { ex: { icon: string; title: string; desc: 
 }
 
 /**
- * Fin de partie : valide la partie (10 XP). Aucune partie n'est validée
- * automatiquement — c'est toujours l'utilisateur qui la termine.
+ * Rappel de ce qu'il reste à faire pour valider la partie. L'état est relu en
+ * direct (et non figé à l'ouverture de la vue) : finir les exercices bascule
+ * le message sans avoir à revenir en arrière.
  */
-function StepDone({ done, onDone }: { done: boolean; onDone: () => void }) {
-  if (done) return <p className="lr-step-done">✓ Partie terminée — 10 XP gagnés</p>;
-  return (
-    <button className="btn ghost sm lr-step-cta" onClick={onDone}>
-      Marquer cette partie comme terminée (+10 XP)
-    </button>
-  );
+function StepDone({ code, todo }: { code: string; todo: string }) {
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    const refresh = () => setDone(getValidated().has(code));
+    refresh();
+    window.addEventListener("hibi-progress", refresh);
+    return () => window.removeEventListener("hibi-progress", refresh);
+  }, [code]);
+
+  if (done) return <p className="lr-step-done">✓ Partie validée</p>;
+  return <p className="lr-step-todo">Pour valider cette partie : {todo}</p>;
 }
 
 /** Contenu plein écran du module vocabulaire : liste des mots + exercices. */
-function VocabContent({ m, words, done, onEngage, openView }: { m: CombinedModule; words: VocabItemRow[]; done: boolean; onEngage: () => void; openView: OpenView }) {
+function VocabContent({ m, words, onEngage, openView }: { m: CombinedModule; words: VocabItemRow[]; onEngage: () => void; openView: OpenView }) {
+  const [seen, setSeen] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    const refresh = () => setSeen(getSeen());
+    refresh();
+    return onSeenChange(refresh);
+  }, []);
+
   if (words.length === 0) return <p className="lr-mod-note">Contenu à venir — {m.lesson.count} mots.</p>;
   const cards = words.map((v) => ({ id: v.id, front: v.lemma, sub: v.reading ?? undefined, back: v.gloss }));
   return (
@@ -229,7 +248,8 @@ function VocabContent({ m, words, done, onEngage, openView }: { m: CombinedModul
         {words.map((v, i) => (
           <li
             key={v.id}
-            className="vrow"
+            className={`vrow ${seen.has(v.id) ? "seen" : ""}`}
+            title={seen.has(v.id) ? "Fiche déjà consultée" : undefined}
             onClick={() => openView(`Vocabulaire · ${m.lesson.title}`, <VocabPager words={words} startIndex={i} />)}
           >
             <span className="vnum">{i + 1}</span>
@@ -253,7 +273,7 @@ function VocabContent({ m, words, done, onEngage, openView }: { m: CombinedModul
               onComplete={onEngage}
               onDetails={(id) => {
                 const w = words.find((x) => x.id === id);
-                if (w) openView(`Fiche · ${w.lemma}`, <FicheView item={w as unknown as FicheItem} />);
+                if (w) { markSeen(w.id); openView(`Fiche · ${w.lemma}`, <FicheView item={w as unknown as FicheItem} />); }
               }}
             />
           </>,
@@ -261,17 +281,16 @@ function VocabContent({ m, words, done, onEngage, openView }: { m: CombinedModul
       >
         Faire les exercices ({words.length} cartes) →
       </button>
-      <StepDone done={done} onDone={onEngage} />
+      <StepDone code={m.lesson.code} todo={`révise les ${words.length} cartes jusqu'au bout.`} />
     </div>
   );
 }
 
 /** Contenu plein écran d'un module grammaire / conjugaison : règles + exercices. */
-function PointsContent({ m, rules, exercises, done, onEngage, openView }: {
+function PointsContent({ m, rules, exercises, onEngage, openView }: {
   m: CombinedModule;
   rules: GrammarRule[];
   exercises: ExItem[];
-  done: boolean;
   onEngage: () => void;
   openView: OpenView;
 }) {
@@ -312,7 +331,14 @@ function PointsContent({ m, rules, exercises, done, onEngage, openView }: {
           Faire les exercices ({exercises.length * 2} questions) →
         </button>
       )}
-      <StepDone done={done} onDone={onEngage} />
+      <StepDone
+        code={m.lesson.code}
+        todo={
+          exercises.length > 0
+            ? "termine la série d'exercices de traduction."
+            : "les exercices de cette partie arrivent bientôt."
+        }
+      />
     </div>
   );
 }
@@ -341,6 +367,12 @@ function VocabPager({ words, startIndex }: { words: VocabItemRow[]; startIndex: 
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [i, words.length, go]);
+
+  // Le mot affiché est marqué « vu » → il grise dans la liste de la leçon.
+  useEffect(() => {
+    const w = words[i];
+    if (w) markSeen(w.id);
+  }, [i, words]);
 
   const nav = (
     <div className="vpager-nav">

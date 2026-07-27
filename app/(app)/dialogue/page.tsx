@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { contentService } from "@/server/content/content.service";
 import { LevelTabs } from "@/components/features/LevelTabs";
+import { WordText } from "@/components/features/WordText";
 import { JLPT_LEVELS, type JlptLevel } from "@/lib/constants";
 
 export default async function DialoguePage({ searchParams }: { searchParams: Promise<{ level?: string }> }) {
@@ -34,7 +35,7 @@ export default async function DialoguePage({ searchParams }: { searchParams: Pro
                 {d!.lines.map((l) => (
                   <div key={l.id} className="dlg-line">
                     <span className="dlg-who">{l.speaker}</span>
-                    <span><span className="dlg-jp">{l.jp}</span><br /><span className="dlg-fr">{l.fr}</span></span>
+                    <span><span className="dlg-jp"><WordText text={l.jp} /></span><br /><span className="dlg-fr">{l.fr}</span></span>
                   </div>
                 ))}
               </div>
