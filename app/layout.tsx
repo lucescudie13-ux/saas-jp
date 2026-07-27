@@ -18,6 +18,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr">
       <head>
+        {/*
+          Capture de `beforeinstallprompt` AU PLUS TÔT. Chrome/Edge déclenchent
+          cet événement dès le chargement de la page, souvent avant que React
+          n'ait monté ses composants : un listener posé dans un useEffect arrive
+          trop tard et l'invite d'installation est perdue pour de bon (elle ne
+          se redéclenche pas). On l'attrape donc ici, on la met de côté sur
+          window, et <InstallApp/> la récupère quand il est prêt.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){window.__hibiInstallPrompt=null;" +
+              "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();" +
+              "window.__hibiInstallPrompt=e;window.dispatchEvent(new Event('hibi-install-ready'));});" +
+              "window.addEventListener('appinstalled',function(){window.__hibiInstallPrompt=null;" +
+              "window.dispatchEvent(new Event('hibi-installed'));});})();",
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
