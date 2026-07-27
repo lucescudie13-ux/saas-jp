@@ -25,3 +25,11 @@ maison. Pour les remplacer par tes propres visuels :
 - **PNG / WebP** : dépose `egg.png` (etc.) et change l'extension dans le champ
   `img` de `lib/dragon.ts`. Préfère un **carré à fond transparent** (512×512+),
   sujet centré (il est posé dans un médaillon rond).
+
+## Cas particulier : `egg.svg`
+
+L'œuf sert aussi d'**écran de chargement** entre deux pages
+(`app/(app)/loading.tsx`), où il tourne sur lui-même. Il lit la même entrée
+`DRAGON_STAGES[0].img` : remplacer le fichier (ou l'extension dans
+`lib/dragon.ts`) met à jour le stade « Œuf » **et** l'écran de chargement d'un
+coup. Un carré à fond transparent tourne mieux qu'une image détourée de travers.
