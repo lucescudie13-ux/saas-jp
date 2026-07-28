@@ -46,14 +46,20 @@ export function Sidebar({ level }: { level: JlptLevel }) {
   const [open, setOpen] = useState(false);
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
+  // L'état mémorisé n'est restauré QU'EN mode « pousse » (grand écran). En
+  // recouvrement, la barre repart toujours fermée : sinon elle se rouvre
+  // par-dessus le contenu, voile compris, à chaque retour sur une page.
   useEffect(() => {
     try {
-      setOpen(window.localStorage.getItem(KEY) === "1");
+      if (window.localStorage.getItem(KEY) === "1" && !window.matchMedia(OVERLAY).matches) {
+        setOpen(true);
+      }
     } catch {
       /* ignore */
     }
   }, []);
 
+  /** Choix explicite de l'utilisateur → mémorisé. */
   const set = useCallback((next: boolean) => {
     setOpen(next);
     try {
@@ -65,6 +71,25 @@ export function Sidebar({ level }: { level: JlptLevel }) {
 
   const close = useCallback(() => set(false), [set]);
 
+  /** Fermeture de circonstance (navigation, écran rétréci) : la préférence
+   *  d'affichage sur grand écran n'est pas touchée. */
+  const dismiss = useCallback(() => setOpen(false), []);
+
+  // Changer de page referme la barre tant qu'elle recouvre le contenu — quel
+  // que soit le lien emprunté, pas seulement ceux de la barre.
+  useEffect(() => {
+    if (window.matchMedia(OVERLAY).matches) dismiss();
+  }, [pathname, dismiss]);
+
+  // Rétrécir la fenêtre fait passer la barre en recouvrement : on la referme
+  // plutôt que de laisser un panneau posé sur le contenu.
+  useEffect(() => {
+    const mq = window.matchMedia(OVERLAY);
+    const onChange = () => { if (mq.matches) dismiss(); };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [dismiss]);
+
   // Échap referme le panneau.
   useEffect(() => {
     if (!open) return;
@@ -73,10 +98,8 @@ export function Sidebar({ level }: { level: JlptLevel }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [open, close]);
 
-  // Sur petit écran la barre recouvre le contenu : naviguer la referme.
-  // Sur grand écran elle pousse le contenu, donc on la laisse ouverte.
   const closeIfOverlay = () => {
-    if (typeof window !== "undefined" && window.matchMedia(OVERLAY).matches) close();
+    if (typeof window !== "undefined" && window.matchMedia(OVERLAY).matches) dismiss();
   };
 
   return (

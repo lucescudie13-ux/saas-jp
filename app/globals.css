@@ -838,7 +838,11 @@
    visible ; fermée, la barre sort complètement du flux et le contenu occupe
    toute la largeur. Le choix est mémorisé (localStorage, cf. Sidebar.tsx). */
 
-.side-toggle{display:grid;place-items:center;position:fixed;top:12px;left:12px;z-index:130;
+/* Empilement : topbar 40 < voile barre 45 < barre 50 < bouton 60
+   < voile fiche 70 < fiche 71. Le bouton reste au-dessus de la barre qu'il
+   commande, mais passe DERRIÈRE une fiche ouverte — sinon il flotte par-dessus
+   un panneau modal, ce qui n'a aucun sens. */
+.side-toggle{display:grid;place-items:center;position:fixed;top:12px;left:12px;z-index:60;
   width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card);
   color:var(--ink);font-size:17px;line-height:1;cursor:pointer;box-shadow:var(--shadow);
   transition:background .15s,border-color .15s}
