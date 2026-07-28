@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Route } from "next";
 import type { JlptLevel } from "@/lib/constants";
 import { DragonSidebarCard } from "@/components/features/DragonSidebarCard";
@@ -35,16 +35,62 @@ const ACCOUNT: Item[] = [
   { href: "/profile", label: "Profil", icon: "⚙️" },
 ];
 
+/** En dessous de cette largeur, la barre recouvre le contenu au lieu de le pousser. */
+const OVERLAY = "(max-width:880px)";
+const KEY = "hibi-sidebar-open";
+
 export function Sidebar({ level }: { level: JlptLevel }) {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  // Fermée par défaut : c'est un panneau qu'on ouvre, pas une colonne fixe.
+  // Le choix est mémorisé d'une visite à l'autre.
+  const [open, setOpen] = useState(false);
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
-  const close = () => setMobileOpen(false);
+
+  useEffect(() => {
+    try {
+      setOpen(window.localStorage.getItem(KEY) === "1");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const set = useCallback((next: boolean) => {
+    setOpen(next);
+    try {
+      window.localStorage.setItem(KEY, next ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const close = useCallback(() => set(false), [set]);
+
+  // Échap referme le panneau.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, close]);
+
+  // Sur petit écran la barre recouvre le contenu : naviguer la referme.
+  // Sur grand écran elle pousse le contenu, donc on la laisse ouverte.
+  const closeIfOverlay = () => {
+    if (typeof window !== "undefined" && window.matchMedia(OVERLAY).matches) close();
+  };
 
   return (
     <>
-      <button className="side-toggle" onClick={() => setMobileOpen((o) => !o)} aria-label="Menu">☰</button>
-      <aside className={`sidebar ${mobileOpen ? "open" : ""}`}>
+      <button
+        className="side-toggle"
+        onClick={() => set(!open)}
+        aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+        aria-expanded={open}
+        aria-controls="sidebar"
+      >
+        {open ? "✕" : "☰"}
+      </button>
+      <aside id="sidebar" className={`sidebar ${open ? "open" : ""}`}>
         <Link className="brand" href="/plan">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="brand-mark" src="/logo.webp" alt="Hibi" />
@@ -55,20 +101,21 @@ export function Sidebar({ level }: { level: JlptLevel }) {
 
         <div className="nav-label">Listes</div>
         {LISTES.map((it) => (
-          <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={close} />
+          <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={closeIfOverlay} />
         ))}
 
         <div className="nav-label">Entraînement personnalisé</div>
         {TRAINING.map((it) => (
-          <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={close} />
+          <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={closeIfOverlay} />
         ))}
 
         <div className="nav-label">Compte</div>
         {ACCOUNT.map((it) => (
-          <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={close} />
+          <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={closeIfOverlay} />
         ))}
       </aside>
-      {mobileOpen && <div className="side-scrim" onClick={close} />}
+      {/* Voile de fermeture — n'apparaît qu'en mode recouvrement (CSS). */}
+      {open && <div className="side-scrim" onClick={close} />}
     </>
   );
 }
