@@ -2,6 +2,7 @@ import type Stripe from "stripe";
 import { getAuthedContext } from "@/lib/api";
 import { getStripe, stripePriceId, stripeLifetimePriceId, appUrl } from "@/lib/stripe";
 import { subscriptionRepository } from "@/server/subscriptions/subscription.repository";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { ok, unauthorized, serverError } from "@/lib/utils";
 
 // Démarre un paiement Stripe Checkout et renvoie l'URL.
@@ -29,6 +30,24 @@ export async function POST(req: Request) {
         metadata: { user_id: ctx.user.id },
       });
       customer = created.id;
+      // Mémoriser tout de suite : sans ça, un abandon de paiement suivi d'un
+      // nouveau clic recrée un client Stripe à chaque fois (l'identifiant n'est
+      // écrit qu'au retour du webhook, donc jamais si l'utilisateur renonce).
+      // Écriture via le service role : les RLS interdisent à l'utilisateur
+      // d'écrire dans `subscriptions` (cf. migration 008), et c'est voulu.
+      await createAdminClient()
+        .from("subscriptions")
+        .upsert(
+          {
+            user_id: ctx.user.id,
+            stripe_customer_id: customer,
+            // On ne touche à rien d'autre : un abonnement déjà actif le reste.
+            status: sub?.status ?? "inactive",
+            plan: sub?.plan ?? null,
+          },
+          { onConflict: "user_id" },
+        )
+        .then(null, () => null); // échec silencieux : ne jamais bloquer le paiement
     }
 
     const session = await stripe.checkout.sessions.create({

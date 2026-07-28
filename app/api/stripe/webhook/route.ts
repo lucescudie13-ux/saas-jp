@@ -4,6 +4,19 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 // Webhook Stripe → synchronise la table `subscriptions` (via service role).
 // Endpoint public (Stripe n'a pas de session) — exempté d'auth dans le middleware.
+
+/**
+ * Fin de la période en cours (date de renouvellement).
+ * Depuis l'API 2025-03-31, ce champ n'est plus sur l'abonnement mais sur ses
+ * items ; le SDK 22.x est épinglé bien après. On lit les deux emplacements pour
+ * rester correct quelle que soit la version d'API du compte.
+ */
+function periodEndISO(sub: Stripe.Subscription): string | null {
+  const onSub = (sub as unknown as { current_period_end?: number }).current_period_end;
+  const onItem = sub.items?.data?.[0]?.current_period_end;
+  const ts = onSub ?? onItem;
+  return ts ? new Date(ts * 1000).toISOString() : null;
+}
 export async function POST(req: Request) {
   const stripe = getStripe();
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -33,9 +46,12 @@ export async function POST(req: Request) {
           plan: lifetime ? "lifetime" : "pro",
           stripe_customer_id: typeof s.customer === "string" ? s.customer : s.customer?.id ?? null,
           stripe_subscription_id: typeof s.subscription === "string" ? s.subscription : null,
-          // L'accès à vie n'expire pas ; l'abonnement sera tenu à jour par les
-          // événements customer.subscription.*.
-          current_period_end: null,
+          // L'accès à vie n'expire pas → on fixe la date à null.
+          // Pour un abonnement en revanche, la date de renouvellement appartient
+          // aux événements customer.subscription.* : on n'y touche PAS ici. Les
+          // deux événements arrivent à la même seconde, dans un ordre non
+          // garanti — l'écrire ici effacerait la vraie date une fois sur deux.
+          ...(lifetime ? { current_period_end: null } : {}),
         });
       }
     } else if (event.type.startsWith("customer.subscription.")) {
@@ -43,13 +59,12 @@ export async function POST(req: Request) {
       const userId = sub.metadata?.user_id as string | undefined;
       if (userId) {
         const status = event.type === "customer.subscription.deleted" ? "canceled" : sub.status;
-        const periodEnd = (sub as unknown as { current_period_end?: number }).current_period_end;
         await upsert(userId, {
           status,
           plan: "pro",
           stripe_customer_id: typeof sub.customer === "string" ? sub.customer : sub.customer?.id ?? null,
           stripe_subscription_id: sub.id,
-          current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+          current_period_end: periodEndISO(sub),
         });
       }
     }
