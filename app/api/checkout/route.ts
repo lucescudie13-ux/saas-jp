@@ -65,7 +65,18 @@ export async function POST(req: Request) {
     });
 
     return ok({ url: session.url });
-  } catch {
-    return serverError("Impossible de démarrer le paiement.");
+  } catch (err) {
+    // Ne jamais avaler l'erreur en silence : un paiement qui échoue sans laisser
+    // de trace est indiagnosticable une fois en ligne. Le détail complet part
+    // dans les logs du serveur, et le code d'erreur Stripe (resource_missing,
+    // api_key_expired…) remonte à l'écran — c'est lui qui dit quoi corriger.
+    const e = err as { type?: string; code?: string; message?: string };
+    console.error("[checkout] échec Stripe", { type: e?.type, code: e?.code, message: e?.message });
+    const detail = e?.code ?? e?.type;
+    return serverError(
+      detail
+        ? `Impossible de démarrer le paiement (${detail}).`
+        : "Impossible de démarrer le paiement.",
+    );
   }
 }
