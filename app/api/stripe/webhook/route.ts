@@ -19,7 +19,10 @@ function periodEndISO(sub: Stripe.Subscription): string | null {
 }
 export async function POST(req: Request) {
   const stripe = getStripe();
-  const secret = process.env.STRIPE_WEBHOOK_SECRET;
+  // .trim() indispensable : collée dans le formulaire d'un hébergeur, la clé
+  // traîne souvent un retour à la ligne invisible. La signature échoue alors à
+  // chaque appel, Stripe réessaie en boucle, et l'acheteur ne passe jamais Pro.
+  const secret = (process.env.STRIPE_WEBHOOK_SECRET ?? "").trim();
   if (!stripe || !secret) return new Response("stripe not configured", { status: 200 });
 
   const sig = req.headers.get("stripe-signature") ?? "";
@@ -27,7 +30,10 @@ export async function POST(req: Request) {
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(raw, sig, secret);
-  } catch {
+  } catch (err) {
+    // Journalisé : une signature refusée bloque TOUT le paiement (le client
+    // paie et ne reçoit rien), il ne faut jamais que ça passe inaperçu.
+    console.error("[webhook] signature refusée", (err as { message?: string })?.message);
     return new Response("invalid signature", { status: 400 });
   }
 
