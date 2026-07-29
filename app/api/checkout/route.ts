@@ -71,8 +71,14 @@ export async function POST(req: Request) {
     // dans les logs du serveur, et le code d'erreur Stripe (resource_missing,
     // api_key_expired…) remonte à l'écran — c'est lui qui dit quoi corriger.
     const e = err as { type?: string; code?: string; message?: string };
-    console.error("[checkout] échec Stripe", { type: e?.type, code: e?.code, message: e?.message });
+    console.error("[checkout] échec Stripe", { type: e?.type, code: e?.code, message: e?.message, price, plan });
     const detail = e?.code ?? e?.type;
+    // `resource_missing` désigne presque toujours le tarif : on affiche celui
+    // qui a servi. Un identifiant de tarif n'est pas un secret, et c'est le
+    // seul moyen de contrôler ce qui est réellement configuré côté hébergeur.
+    if (e?.code === "resource_missing") {
+      return serverError(`Tarif introuvable pour cette clé Stripe : « ${price} ».`);
+    }
     return serverError(
       detail
         ? `Impossible de démarrer le paiement (${detail}).`
