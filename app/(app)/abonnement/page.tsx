@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { userService } from "@/server/users/user.service";
 import { subscriptionService } from "@/server/subscriptions/subscription.service";
 import { SubscribeButton } from "@/components/features/SubscribeButton";
+import { BillingPortalButton } from "@/components/features/BillingPortalButton";
 
 export default async function AbonnementPage({
   searchParams,
@@ -33,6 +34,13 @@ export default async function AbonnementPage({
         <div className="pcard" style={{ maxWidth: 520 }}>
           <h3>Tu es Pro ✓</h3>
           <p style={{ color: "var(--ink-soft)" }}>Tous les niveaux (N5 → N1) sont débloqués. Merci !</p>
+          <p style={{ color: "var(--ink-soft)", marginTop: 10, fontSize: 13.5 }}>
+            Résiliation, changement de carte et factures se gèrent dans le portail de
+            facturation — tu y fais tout toi-même, sans nous écrire.
+          </p>
+          <div style={{ marginTop: 14 }}>
+            <BillingPortalButton />
+          </div>
         </div>
       ) : (
         <div className="plans">

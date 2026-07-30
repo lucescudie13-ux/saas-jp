@@ -1432,6 +1432,13 @@ header.topbar{padding-left:64px}
 .reset-actions{display:flex;flex-wrap:wrap;gap:8px}
 .reset-done{font-size:13.5px;font-weight:800;color:#3c6b34}
 
+/* — Zone dangereuse du profil : visuellement à part des réglages courants — */
+.pcard.danger-zone{border-color:#e3b7af;background:linear-gradient(165deg,#fff,#fdf4f2)}
+.pcard.danger-zone h3{color:var(--vermilion-deep)}
+.btn.danger-text{color:var(--vermilion-deep);border-color:#e3b7af}
+.btn.danger-text:hover{border-color:var(--vermilion);background:#fbeeec}
+.portal-error{margin-top:10px;font-size:13px;color:var(--vermilion-deep);font-weight:700}
+
 
 /* ============ Tableau de bord (KPI, graphe, leçon du jour) ============ */
 .intro{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--shadow)}
