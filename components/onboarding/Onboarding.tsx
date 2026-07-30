@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   ONBOARDING_STEPS,
-  onboardingSeen,
+  locallyDismissed,
   markOnboardingSeen,
 } from "@/lib/onboarding";
 
@@ -13,24 +13,25 @@ import {
  *
  * Coût de chargement, puisque c'était la contrainte :
  *   • aucune bibliothèque d'animation — tout est en CSS
- *   • une seule image, un SVG de 4 ko déjà servi depuis /public
- *   • rien n'est rendu côté serveur ni pendant l'hydratation : le composant
- *     retourne null jusqu'à ce que le premier effet ait lu localStorage. Le
- *     tutoriel n'entre donc jamais dans le chemin du premier affichage.
- *   • la mémoire est locale (localStorage), donc aucune requête réseau pour
- *     savoir s'il faut l'afficher.
+ *   • une seule image, un SVG de 5 ko déjà servi depuis /public
+ *   • `show` vient du SERVEUR, qui a déjà le profil en main : aucune requête
+ *     n'est faite pour savoir s'il faut afficher le tutoriel. Le seul appel
+ *     réseau a lieu une fois, quand l'utilisateur le termine — et il part en
+ *     arrière-plan, sans retarder la fermeture.
  */
-export function Onboarding() {
+export function Onboarding({ show }: { show: boolean }) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
-    if (!onboardingSeen()) setOpen(true);
+    // Le compte dit « jamais vu », mais on respecte aussi le repère local :
+    // il évite de rejouer le tutoriel si l'écriture en base a échoué.
+    if (show && !locallyDismissed()) setOpen(true);
     const replay = () => { setStep(0); setClosing(false); setOpen(true); };
     window.addEventListener("hibi-onboarding-replay", replay);
     return () => window.removeEventListener("hibi-onboarding-replay", replay);
-  }, []);
+  }, [show]);
 
   const finish = useCallback(() => {
     markOnboardingSeen();

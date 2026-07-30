@@ -98,6 +98,9 @@ export type ProfileRow = Timestamps & {
   /** 'user' | 'admin' — un admin accède à tout sans abonnement (migration 010).
    *  En lecture seule pour l'utilisateur : un trigger interdit l'auto-promotion. */
   role: "user" | "admin";
+  /** Date à laquelle le tutoriel de bienvenue a été terminé (migration 011).
+   *  `null` = jamais vu → le tutoriel s'affiche. */
+  onboarded_at: string | null;
 }
 
 export type UserPreferencesRow = Timestamps & {
