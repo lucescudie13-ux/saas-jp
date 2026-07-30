@@ -8,6 +8,13 @@ import { getLevelLessons } from "@/lib/curriculum";
 import { getValidated } from "@/lib/lesson-progress";
 import { computeDragon, xpFromValidated, type DragonStage } from "@/lib/dragon";
 import { canOpenExam, lessonLock, type Access } from "@/lib/access";
+import {
+  foundationLessons,
+  FOUNDATIONS_BADGE,
+  FOUNDATIONS_LABEL,
+  FOUNDATIONS_TITLE,
+  FOUNDATIONS_INTRO,
+} from "@/lib/foundations";
 
 /** Le plan ne connaît qu'un booléen « tout ouvert » : le détail du rôle et de
  *  l'abonnement reste côté serveur, où il est vérifiable. Les verrous affichés
@@ -50,6 +57,7 @@ export function LessonPath({ fullAccess = false }: { fullAccess?: boolean }) {
   }, []);
 
   const dragon = computeDragon(xpFromValidated(validated));
+  const foundations = foundationLessons();
 
   return (
     <div className="levels">
@@ -60,6 +68,32 @@ export function LessonPath({ fullAccess = false }: { fullAccess?: boolean }) {
         <span><i className="lg-progress" /> termine la précédente</span>
         {!fullAccess && <span><i className="lg-subscribe" /> réservée aux abonnés</span>}
       </div>
+
+      {/* Catégorie préliminaire, avant le N5 : comprendre la langue et la
+          méthode avant d'attaquer le contenu. Ouverte à tous, sans verrou. */}
+      <section className="level-block">
+        <header className="level-head">
+          <span className="level-badge is-foundations">{FOUNDATIONS_BADGE}</span>
+          <div className="level-head-txt">
+            <b>{FOUNDATIONS_LABEL}</b>
+            <span>{FOUNDATIONS_TITLE}</span>
+          </div>
+          <span className="level-prog">Accès libre</span>
+        </header>
+        <p className="level-intro">{FOUNDATIONS_INTRO}</p>
+        <div className="foundation-list">
+          {foundations.map((f, i) => (
+            <Link key={f.slug} href={`/bases/${f.slug}` as Route} className="foundation-item">
+              <span className="foundation-num">{i + 1}</span>
+              <span className="foundation-txt">
+                <b>{f.title}</b>
+                {f.summary && <span>{f.summary}</span>}
+              </span>
+              <span className="foundation-go" aria-hidden>→</span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       {JLPT_LEVELS.map((lv) => {
         const lessons = getLevelLessons(lv);

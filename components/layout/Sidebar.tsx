@@ -12,7 +12,6 @@ type Item = { href?: Route; label: string; icon: string; jp?: boolean; locked?: 
 // « Listes » — les référentiels à parcourir.
 const LISTES: Item[] = [
   { href: "/vocab", label: "Vocabulaire", icon: "語", jp: true },
-  { href: "/phrases", label: "Phrases utiles", icon: "💬" },
   { href: "/grammar", label: "Règles de grammaire", icon: "文", jp: true },
   { href: "/conjugation" as Route, label: "Règles de conjugaison", icon: "活", jp: true },
 ];

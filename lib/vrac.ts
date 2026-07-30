@@ -101,12 +101,18 @@ export interface VracLesson {
 
 /** Sous-catégorie : un groupe de leçons sous un même thème. */
 export interface VracGroup {
+  /** Identifiant stable, pour référencer un groupe depuis ailleurs sans
+   *  dépendre de son titre (qui peut être reformulé). */
+  id?: string;
   title: string;
   lessons: VracLesson[];
 }
 
 export const VRAC_GROUPS: VracGroup[] = [
   {
+    // Ce groupe alimente la catégorie préliminaire du plan d'étude,
+    // avant le N5 (cf. lib/foundations.ts).
+    id: "fondamentaux",
     title: "Fonctionnement du japonais",
     lessons: [
       {
