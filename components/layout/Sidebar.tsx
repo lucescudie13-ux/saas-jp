@@ -28,10 +28,16 @@ const TRAINING: Item[] = [
   { label: "Outil de compréhension écrite", icon: "📖", locked: true },
 ];
 
-const ACCOUNT: Item[] = [
-  { href: "/vrac" as Route, label: "Brouillon", icon: "🗒️" },
+// « Application » — ce qui touche à l'outil lui-même, pas au compte.
+const APP_ITEMS: Item[] = [
   { href: "/telecharger" as Route, label: "Télécharger l'app", icon: "⬇️" },
-  { href: "/profile", label: "Profil", icon: "⚙️" },
+  { href: "/vrac" as Route, label: "Brouillon", icon: "🗒️" },
+];
+
+// « Gérer mon compte » — identité, abonnement, déconnexion.
+const ACCOUNT: Item[] = [
+  { href: "/profile", label: "Mon compte", icon: "⚙️" },
+  { href: "/abonnement" as Route, label: "Abonnement", icon: "💳" },
 ];
 
 /** En dessous de cette largeur, la barre recouvre le contenu au lieu de le pousser. */
@@ -131,7 +137,12 @@ export function Sidebar({ level }: { level: JlptLevel }) {
           <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={closeIfOverlay} />
         ))}
 
-        <div className="nav-label">Compte</div>
+        <div className="nav-label">Application</div>
+        {APP_ITEMS.map((it) => (
+          <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={closeIfOverlay} />
+        ))}
+
+        <div className="nav-label">Gérer mon compte</div>
         {ACCOUNT.map((it) => (
           <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={closeIfOverlay} />
         ))}
