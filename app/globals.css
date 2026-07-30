@@ -2282,10 +2282,29 @@ header.topbar{padding-left:64px}
   border-color:var(--vermilion);color:var(--vermilion-deep);
   box-shadow:0 0 0 3px color-mix(in srgb, var(--vermilion) 22%, transparent),var(--shadow);
 }
-/* — Leçon verrouillée : rendue en <span>, donc ni cliquable ni survolable — */
-.lesson-btn.locked{background:var(--paper-2);border-color:var(--line);color:var(--ink-faint);cursor:not-allowed;box-shadow:none}
-.lesson-btn.locked:hover{transform:none;border-color:var(--line);box-shadow:none}
+/* — Deux verrous, deux allures. Rendus en <span> : ni cliquables ni ouvrables. —
+     • locked-subscribe : fond plein, cadenas, numéro caché → « pas à toi »
+     • locked-progress  : contour pointillé, numéro conservé en pâle → « à toi,
+       mais pas encore ouverte » */
+.lesson-btn.locked-subscribe,.lesson-btn.locked-progress{cursor:not-allowed;box-shadow:none}
+.lesson-btn.locked-subscribe:hover,.lesson-btn.locked-progress:hover{transform:none;box-shadow:none}
+
+.lesson-btn.locked-subscribe{background:var(--paper-2);border-color:var(--line);color:var(--ink-faint)}
+.lesson-btn.locked-subscribe:hover{border-color:var(--line)}
 .lesson-btn-lock{font-size:15px;line-height:1;opacity:.55}
+
+.lesson-btn.locked-progress{background:transparent;border-style:dashed;border-color:var(--line-strong);color:var(--ink-faint)}
+.lesson-btn.locked-progress:hover{border-color:var(--line-strong)}
+.lesson-btn.locked-progress .lesson-btn-n{opacity:.5;font-weight:700}
+
+/* — Légende des états, sans quoi deux cases grises sont illisibles — */
+.lesson-legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:4px;font-size:12.5px;color:var(--ink-faint)}
+.lesson-legend span{display:inline-flex;align-items:center;gap:7px}
+.lesson-legend i{width:15px;height:15px;border-radius:5px;flex:none;border:1px solid var(--line)}
+.lesson-legend .lg-open{background:var(--paper);border-color:var(--line)}
+.lesson-legend .lg-done{background:linear-gradient(160deg,#84c273,#3c6b34);border-color:#2f5528}
+.lesson-legend .lg-progress{background:transparent;border-style:dashed;border-color:var(--line-strong)}
+.lesson-legend .lg-subscribe{background:var(--paper-2);border-color:var(--line)}
 
 /* — Niveau entier réservé : le bandeau d'examen devient un appel à l'abonnement — */
 .level-exam.is-locked{background:linear-gradient(150deg,#8f8a80,#615d56);border-color:#4d4a44;box-shadow:0 6px 16px rgba(34,32,29,.18)}

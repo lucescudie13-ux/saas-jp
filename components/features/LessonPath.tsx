@@ -7,10 +7,12 @@ import { JLPT_LEVELS, LEVEL_LABELS, type JlptLevel } from "@/lib/constants";
 import { getLevelLessons } from "@/lib/curriculum";
 import { getValidated } from "@/lib/lesson-progress";
 import { computeDragon, xpFromValidated, type DragonStage } from "@/lib/dragon";
-import { canOpenLesson, canOpenExam, type Access } from "@/lib/access";
+import { canOpenExam, lessonLock, type Access } from "@/lib/access";
 
 /** Le plan ne connaît qu'un booléen « tout ouvert » : le détail du rôle et de
- *  l'abonnement reste côté serveur, où il est vérifiable. */
+ *  l'abonnement reste côté serveur, où il est vérifiable. Les verrous affichés
+ *  ici sont calculés depuis le cache local pour réagir immédiatement à une
+ *  validation — la vraie garde est sur la page de leçon, côté serveur. */
 const ACCESS = (fullAccess: boolean): Access => ({ isAdmin: false, isPro: fullAccess });
 
 /**
@@ -51,6 +53,14 @@ export function LessonPath({ fullAccess = false }: { fullAccess?: boolean }) {
 
   return (
     <div className="levels">
+      {/* Sans légende, deux cases grises se ressemblent trop pour être lues. */}
+      <div className="lesson-legend">
+        <span><i className="lg-open" /> ouverte</span>
+        <span><i className="lg-done" /> validée</span>
+        <span><i className="lg-progress" /> termine la précédente</span>
+        {!fullAccess && <span><i className="lg-subscribe" /> réservée aux abonnés</span>}
+      </div>
+
       {JLPT_LEVELS.map((lv) => {
         const lessons = getLevelLessons(lv);
         const total = lessons.length;
@@ -73,25 +83,41 @@ export function LessonPath({ fullAccess = false }: { fullAccess?: boolean }) {
               {lessons.map((l) => {
                 const done = isDone(l);
                 const current = l.num === currentNum;
-                const open = canOpenLesson(lv, l.num, ACCESS(fullAccess));
-                const state = !open ? "locked" : done ? "done" : current ? "current" : "todo";
+                const lock = lessonLock(lv, l.num, lessons, validated, ACCESS(fullAccess));
+                const state = done ? "done" : current ? "current" : "todo";
                 const title =
                   l.modules.find((m) => m.track === "vocab")?.lesson.title ??
                   l.modules[0]?.lesson.title ??
                   "";
                 const label = title ? `Leçon ${l.num} — ${title}` : `Leçon ${l.num}`;
 
-                // Verrouillée : un <span>, pas un lien. Rien à cliquer, rien à
-                // ouvrir dans un nouvel onglet, rien à survoler pour deviner.
-                if (!open) {
+                // Fermée : un <span>, pas un lien. Rien à cliquer, rien à ouvrir
+                // dans un nouvel onglet. Les deux causes sont distinguées :
+                //  • abonnement manquant → cadenas sur fond plein, le numéro
+                //    disparaît : cette leçon n'est pas à lui.
+                //  • leçon précédente non finie → contour pointillé, numéro
+                //    conservé en pâle : elle est à lui, juste pas encore ouverte.
+                if (lock === "subscribe") {
                   return (
                     <span
                       key={l.num}
-                      className="lesson-btn locked"
+                      className="lesson-btn locked-subscribe"
                       title={`Leçon ${l.num} — réservée aux abonnés`}
                       aria-disabled="true"
                     >
                       <span className="lesson-btn-lock" aria-hidden>🔒</span>
+                    </span>
+                  );
+                }
+                if (lock === "progress") {
+                  return (
+                    <span
+                      key={l.num}
+                      className="lesson-btn locked-progress"
+                      title={`Leçon ${l.num} — termine la leçon ${l.num - 1} pour l'ouvrir`}
+                      aria-disabled="true"
+                    >
+                      <span className="lesson-btn-n">{l.num}</span>
                     </span>
                   );
                 }

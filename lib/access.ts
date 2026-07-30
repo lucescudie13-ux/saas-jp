@@ -45,31 +45,62 @@ export function canOpenExam(level: JlptLevel, access: Access): boolean {
   return hasFullAccess(access) || level === FREE_LEVEL;
 }
 
+export interface LessonRef {
+  num: number;
+  codes: string[];
+}
+
+/** Une leçon est terminée quand toutes ses parties sont validées. Une leçon
+ *  sans partie compte comme faite, sinon elle bloquerait la suite à jamais. */
+export function isLessonDone(lesson: LessonRef, validated: Set<string>): boolean {
+  return lesson.codes.length === 0 || lesson.codes.every((c) => validated.has(c));
+}
+
+/**
+ * Pourquoi une leçon est fermée, ou `null` si elle est ouverte. Deux causes,
+ * volontairement distinguées car elles n'appellent pas la même action :
+ *
+ *   'subscribe' → hors de l'essai gratuit : il faut s'abonner
+ *   'progress'  → à sa portée, mais la leçon précédente n'est pas terminée
+ *
+ * La progression se calcule niveau par niveau, indépendamment : chaque niveau
+ * démarre ouvert à sa leçon 1. Un abonné qui vise le N3 attaque donc le N3
+ * directement, sans avoir à traverser le N5.
+ */
+export type LessonLock = null | "progress" | "subscribe";
+
+export function lessonLock(
+  level: JlptLevel,
+  num: number,
+  lessons: LessonRef[],
+  validated: Set<string>,
+  access: Access,
+): LessonLock {
+  if (!canOpenLesson(level, num, access)) return "subscribe";
+  if (num <= 1) return null; // point de départ de chaque niveau
+  const previous = lessons.find((l) => l.num === num - 1);
+  if (!previous) return null;
+  return isLessonDone(previous, validated) ? null : "progress";
+}
+
 /**
  * Leçons dont le CONTENU est dévoilé dans les listes (vocabulaire, grammaire,
- * conjugaison) — mécanique de récompense : terminer une leçon fait apparaître
- * le contenu de la suivante. On ne voit donc jamais plus d'une leçon d'avance.
- *
- * Cumulé avec les droits d'accès : un visiteur gratuit plafonne aux leçons
- * offertes même s'il les termine toutes.
+ * conjugaison) — même mécanique que `lessonLock`, exprimée en ensemble pour
+ * parcourir une liste d'un coup.
  *
  * À appeler côté SERVEUR : le contenu des leçons non dévoilées ne doit pas
  * partir dans la page, sinon il suffit d'ouvrir l'inspecteur pour tout lire.
  */
 export function revealedLessonNumbers(
   level: JlptLevel,
-  lessons: Array<{ num: number; codes: string[] }>,
+  lessons: LessonRef[],
   validated: Set<string>,
   access: Access,
 ): Set<number> {
   const revealed = new Set<number>();
-  // La première leçon est toujours offerte : il faut bien un point de départ.
-  let previousDone = true;
   for (const lesson of lessons) {
-    if (!previousDone) break;
-    if (!canOpenLesson(level, lesson.num, access)) break;
+    if (lessonLock(level, lesson.num, lessons, validated, access) !== null) break;
     revealed.add(lesson.num);
-    previousDone = lesson.codes.length > 0 && lesson.codes.every((c) => validated.has(c));
   }
   return revealed;
 }

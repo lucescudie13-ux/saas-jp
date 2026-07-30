@@ -6,8 +6,9 @@ import { getCombinedLesson, levelLessonCount } from "@/lib/curriculum";
 import { LessonRoadmap } from "@/components/features/LessonRoadmap";
 import { createClient } from "@/lib/supabase/server";
 import { contentService } from "@/server/content/content.service";
-import { getAccess } from "@/server/access/access.service";
-import { canOpenLesson, LOCKED_MESSAGE } from "@/lib/access";
+import { getAccess, getValidatedCodes } from "@/server/access/access.service";
+import { lessonLock, LOCKED_MESSAGE } from "@/lib/access";
+import { getLevelLessons } from "@/lib/curriculum";
 
 export default async function LeconPage({ params }: { params: Promise<{ level: string; num: string }> }) {
   const { level, num } = await params;
@@ -26,21 +27,38 @@ export default async function LeconPage({ params }: { params: Promise<{ level: s
   const db = await createClient();
 
   // Contrôle d'accès AVANT toute lecture de contenu : on ne charge même pas le
-  // vocabulaire ni la grammaire d'une leçon verrouillée. Masquer le bouton dans
-  // le plan ne suffirait pas — cette URL peut être tapée directement.
+  // vocabulaire ni la grammaire d'une leçon fermée. Masquer la case dans le plan
+  // ne suffirait pas — cette URL peut être tapée directement. La progression est
+  // relue en base : le cache du navigateur se modifie en trois secondes.
   const access = await getAccess(db);
-  if (!canOpenLesson(level as JlptLevel, n, access)) {
+  const validated = await getValidatedCodes(db, access.userId);
+  const lock = lessonLock(level as JlptLevel, n, getLevelLessons(level as JlptLevel), validated, access);
+  if (lock !== null) {
     return (
       <>
         <div className="page-head">
           <Link href={"/plan" as Route} className="vrac-back">← Plan d&apos;étude</Link>
           <span className="pill-tag">{lesson.level} · Leçon {lesson.num}</span>
-          <h1>Leçon verrouillée</h1>
+          <h1>{lock === "progress" ? "Leçon pas encore ouverte" : "Leçon verrouillée"}</h1>
         </div>
         <div className="locked-card">
-          <span className="locked-ic" aria-hidden>🔒</span>
-          <p>{LOCKED_MESSAGE}</p>
-          <Link href={"/abonnement" as Route} className="btn primary">Voir les offres →</Link>
+          <span className="locked-ic" aria-hidden>{lock === "progress" ? "⏳" : "🔒"}</span>
+          {lock === "progress" ? (
+            <>
+              <p>
+                Termine la leçon {n - 1} pour ouvrir celle-ci. Les leçons se suivent, et
+                chaque leçon terminée dévoile la suivante.
+              </p>
+              <Link href={`/lecon/${level}/${n - 1}` as Route} className="btn primary">
+                Aller à la leçon {n - 1} →
+              </Link>
+            </>
+          ) : (
+            <>
+              <p>{LOCKED_MESSAGE}</p>
+              <Link href={"/abonnement" as Route} className="btn primary">Voir les offres →</Link>
+            </>
+          )}
         </div>
       </>
     );
