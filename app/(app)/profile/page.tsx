@@ -7,6 +7,7 @@ import type { Route } from "next";
 import { ProfileForm } from "@/components/forms/ProfileForm";
 import { DragonNameField } from "@/components/forms/DragonNameField";
 import { ResetProgressButton } from "@/components/forms/ResetProgressButton";
+import { ReplayTutorialButton } from "@/components/onboarding/ReplayTutorialButton";
 
 export default async function ProfilePage() {
   const db = await createClient();
@@ -34,7 +35,8 @@ export default async function ProfilePage() {
             entre ses parties (33 / 33 / 34 pour vocabulaire + grammaire + conjugaison),
             et chaque partie se valide en faisant ses exercices jusqu&apos;au bout.
           </p>
-          <div style={{ marginTop: 14 }}>
+          <div style={{ marginTop: 14, display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <ReplayTutorialButton />
             <ResetProgressButton />
           </div>
         </div>
