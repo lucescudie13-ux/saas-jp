@@ -6,6 +6,8 @@ import { getCombinedLesson, levelLessonCount } from "@/lib/curriculum";
 import { LessonRoadmap } from "@/components/features/LessonRoadmap";
 import { createClient } from "@/lib/supabase/server";
 import { contentService } from "@/server/content/content.service";
+import { getAccess } from "@/server/access/access.service";
+import { canOpenLesson, LOCKED_MESSAGE } from "@/lib/access";
 
 export default async function LeconPage({ params }: { params: Promise<{ level: string; num: string }> }) {
   const { level, num } = await params;
@@ -22,6 +24,28 @@ export default async function LeconPage({ params }: { params: Promise<{ level: s
   const grammarMod = lesson.modules.find((m) => m.track === "grammar");
   const conjMod = lesson.modules.find((m) => m.track === "conjugation");
   const db = await createClient();
+
+  // Contrôle d'accès AVANT toute lecture de contenu : on ne charge même pas le
+  // vocabulaire ni la grammaire d'une leçon verrouillée. Masquer le bouton dans
+  // le plan ne suffirait pas — cette URL peut être tapée directement.
+  const access = await getAccess(db);
+  if (!canOpenLesson(level as JlptLevel, n, access)) {
+    return (
+      <>
+        <div className="page-head">
+          <Link href={"/plan" as Route} className="vrac-back">← Plan d&apos;étude</Link>
+          <span className="pill-tag">{lesson.level} · Leçon {lesson.num}</span>
+          <h1>Leçon verrouillée</h1>
+        </div>
+        <div className="locked-card">
+          <span className="locked-ic" aria-hidden>🔒</span>
+          <p>{LOCKED_MESSAGE}</p>
+          <Link href={"/abonnement" as Route} className="btn primary">Voir les offres →</Link>
+        </div>
+      </>
+    );
+  }
+
   const [vocab, grammar, conjugation, grammarExercises, conjExercises, comprehension] = await Promise.all([
     vocabMod ? contentService.listVocabByCode(db, vocabMod.lesson.code) : Promise.resolve([]),
     grammarMod ? contentService.getLessonCourse(db, grammarMod.lesson.code) : Promise.resolve([]),

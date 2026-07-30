@@ -2,16 +2,35 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { VocabItemRow } from "@/types/database.types";
-import type { VocabByLesson } from "@/server/content/content.types";
+import type { GatedGroup } from "@/lib/access";
 import { VOCAB_TYPE_LABELS } from "@/lib/constants";
 import { getSeen, markSeen, onSeenChange } from "@/lib/vocab-seen";
 import { VocabDrawer } from "./VocabDrawer";
+import { LockedLessonRows } from "./LockedLessonRows";
 
-type Sort = "list" | "lesson" | "theme";
+/**
+ * Liste du vocabulaire, ordonnée par leçon — l'ordre porte désormais du sens,
+ * puisque le contenu se dévoile leçon après leçon. Chaque mot affiche la leçon
+ * dont il vient, et les leçons non dévoilées apparaissent en bloc verrouillé.
+ *
+ * Le contenu verrouillé n'est PAS envoyé par le serveur : ces blocs n'affichent
+ * qu'un numéro, un titre et un décompte.
+ */
 
-/** Une ligne de mot (réutilisée dans la vue liste et la vue par leçon).
- * `seen` = fiche déjà consultée → la ligne passe en gris. */
-function VocabRow({ v, num, seen, onClick }: { v: VocabItemRow; num: number; seen: boolean; onClick: () => void }) {
+/** Une ligne de mot. `seen` = fiche déjà consultée → la ligne passe en gris. */
+function VocabRow({
+  v,
+  num,
+  lesson,
+  seen,
+  onClick,
+}: {
+  v: VocabItemRow;
+  num: number;
+  lesson: number;
+  seen: boolean;
+  onClick: () => void;
+}) {
   return (
     <li className={`vrow ${seen ? "seen" : ""}`} onClick={onClick} title={seen ? "Fiche déjà consultée" : undefined}>
       <span className="vnum">{num}</span>
@@ -19,14 +38,14 @@ function VocabRow({ v, num, seen, onClick }: { v: VocabItemRow; num: number; see
       <span className="vreading">{v.reading ?? ""}</span>
       <span className="vgloss">{v.gloss}</span>
       <span className="vtags">
+        <span className="vlesson-chip">L{lesson}</span>
         <span className="vtype">{VOCAB_TYPE_LABELS[v.type] ?? v.type}</span>
       </span>
     </li>
   );
 }
 
-export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLesson: VocabByLesson }) {
-  const [sort, setSort] = useState<Sort>("list");
+export function VocabBrowser({ groups }: { groups: GatedGroup<VocabItemRow>[] }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<VocabItemRow | null>(null);
   const [seen, setSeen] = useState<Set<string>>(new Set());
@@ -37,134 +56,97 @@ export function VocabBrowser({ items, byLesson }: { items: VocabItemRow[]; byLes
     return onSeenChange(refresh);
   }, []);
 
-  // Ouvrir une fiche = l'avoir vue (elle grise dans la liste).
   const open = (v: VocabItemRow) => { markSeen(v.id); setSelected(v); };
 
-  const hasLessons = byLesson.groups.length > 0;
+  const revealed = useMemo(() => groups.filter((g) => g.revealed), [groups]);
+  const locked = useMemo(() => groups.filter((g) => !g.revealed), [groups]);
 
-  // Filtre de recherche : lemma (kanji), lecture (kana) ou traduction.
-  const match = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return (v: VocabItemRow) =>
-      !q ||
-      v.lemma.toLowerCase().includes(q) ||
-      (v.reading ?? "").toLowerCase().includes(q) ||
-      v.gloss.toLowerCase().includes(q);
-  }, [query]);
-
-  const listItems = useMemo(() => items.filter(match), [items, match]);
-  const groups = useMemo(
-    () => byLesson.groups.map((g) => ({ ...g, vocab: g.vocab.filter(match) })).filter((g) => g.vocab.length > 0),
-    [byLesson.groups, match]
+  const revealedCount = useMemo(
+    () => revealed.reduce((n, g) => n + g.items.length, 0),
+    [revealed],
   );
-  const ungrouped = useMemo(() => byLesson.ungrouped.filter(match), [byLesson.ungrouped, match]);
+  const lockedCount = useMemo(() => locked.reduce((n, g) => n + g.count, 0), [locked]);
 
-  // Regroupement par thème : les leçons de vocabulaire sont thématiques
-  // (« Alimentation », « Famille »…). On les présente par titre, sans numéro.
-  const themeGroups = useMemo(() => {
-    const all = groups.map((g) => ({ theme: g.lesson.title, vocab: g.vocab }));
-    if (ungrouped.length > 0) all.push({ theme: "Autres", vocab: ungrouped });
-    return all.sort((a, b) =>
-      a.theme === "Autres" ? 1 : b.theme === "Autres" ? -1 : a.theme.localeCompare(b.theme, "fr")
+  // La recherche ne porte que sur le contenu dévoilé — on ne peut pas chercher
+  // dans ce qu'on n'a pas encore débloqué.
+  const q = query.trim().toLowerCase();
+  const matches = (v: VocabItemRow) =>
+    !q ||
+    v.lemma.toLowerCase().includes(q) ||
+    (v.reading ?? "").toLowerCase().includes(q) ||
+    v.gloss.toLowerCase().includes(q);
+
+  const searching = q !== "";
+  const shown = useMemo(
+    () => revealed.map((g) => ({ ...g, items: g.items.filter(matches) })).filter((g) => g.items.length > 0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [revealed, q],
+  );
+  const shownCount = shown.reduce((n, g) => n + g.items.length, 0);
+
+  if (groups.length === 0) {
+    return (
+      <p className="empty">
+        Aucun mot pour ce niveau. Ajoute du contenu dans <code>vocab_items</code>.
+      </p>
     );
-  }, [groups, ungrouped]);
-
-  const visibleCount =
-    sort === "lesson" || sort === "theme"
-      ? groups.reduce((n, g) => n + g.vocab.length, 0) + ungrouped.length
-      : listItems.length;
-  const noResults = query.trim() !== "" && visibleCount === 0;
+  }
 
   return (
     <div>
-      <div className="mode-switch">
-        <button className={`mode-btn ${sort === "list" ? "active" : ""}`} onClick={() => setSort("list")}>
-          Par liste
-        </button>
-        <button
-          className={`mode-btn ${sort === "lesson" ? "active" : ""}`}
-          onClick={() => setSort("lesson")}
-          disabled={!hasLessons}
-          title={hasLessons ? undefined : "Aucune leçon pour ce niveau"}
-        >
-          Par leçon
-        </button>
-        <button
-          className={`mode-btn ${sort === "theme" ? "active" : ""}`}
-          onClick={() => setSort("theme")}
-          disabled={!hasLessons}
-          title={hasLessons ? undefined : "Aucune leçon pour ce niveau"}
-        >
-          Par thème
-        </button>
-      </div>
-
       <div className="vocab-toolbar">
         <input
           className="vocab-search"
           type="search"
-          placeholder="Rechercher (kanji, kana ou français)…"
+          placeholder="Rechercher parmi les mots débloqués (kanji, kana ou français)…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <span className="vocab-count">{visibleCount} mot{visibleCount > 1 ? "s" : ""}</span>
+        <span className="vocab-count">
+          {searching
+            ? `${shownCount} mot${shownCount > 1 ? "s" : ""}`
+            : `${revealedCount} débloqué${revealedCount > 1 ? "s" : ""} · ${lockedCount} à venir`}
+        </span>
       </div>
 
-      {items.length === 0 ? (
-        <p className="empty">Aucun mot pour ce niveau. Ajoute du contenu dans la table <code>vocab_items</code>.</p>
-      ) : noResults ? (
-        <p className="empty">Aucun mot ne correspond à « {query} ».</p>
-      ) : sort === "list" ? (
-        <ul className="vlist">
-          {listItems.map((v, i) => (
-            <VocabRow key={v.id} v={v} num={i + 1} seen={seen.has(v.id)} onClick={() => open(v)} />
-          ))}
-        </ul>
-      ) : sort === "theme" ? (
-        <div className="vlesson-groups">
-          {themeGroups.map(({ theme, vocab }) => (
-            <section key={theme} className="vlesson-group">
-              <h2 className="vlesson-title">
-                <span className="vlesson-num">Thème</span>
-                {theme}
-              </h2>
-              <ul className="vlist">
-                {vocab.map((v, i) => (
-                  <VocabRow key={v.id} v={v} num={i + 1} seen={seen.has(v.id)} onClick={() => open(v)} />
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
+      {searching && shownCount === 0 ? (
+        <p className="empty">Aucun mot débloqué ne correspond à « {query} ».</p>
       ) : (
         <div className="vlesson-groups">
-          {groups.map(({ lesson, vocab }) => (
-            <section key={lesson.id} className="vlesson-group">
+          {shown.map((g) => (
+            <section key={g.num} className="vlesson-group">
               <h2 className="vlesson-title">
-                <span className="vlesson-num">Leçon {lesson.number}</span>
-                {lesson.title}
+                <span className="vlesson-num">Leçon {g.num}</span>
+                {g.title}
               </h2>
               <ul className="vlist">
-                {vocab.map((v, i) => (
-                  <VocabRow key={v.id} v={v} num={i + 1} seen={seen.has(v.id)} onClick={() => open(v)} />
+                {g.items.map((v, i) => (
+                  <VocabRow
+                    key={v.id}
+                    v={v}
+                    num={i + 1}
+                    lesson={g.num}
+                    seen={seen.has(v.id)}
+                    onClick={() => open(v)}
+                  />
                 ))}
               </ul>
             </section>
           ))}
 
-          {ungrouped.length > 0 && (
-            <section className="vlesson-group">
-              <h2 className="vlesson-title">
-                <span className="vlesson-num">Hors leçon</span>
-                Autres mots
-              </h2>
-              <ul className="vlist">
-                {ungrouped.map((v, i) => (
-                  <VocabRow key={v.id} v={v} num={i + 1} seen={seen.has(v.id)} onClick={() => open(v)} />
-                ))}
-              </ul>
-            </section>
-          )}
+          {/* Les blocs verrouillés disparaissent pendant une recherche : ils
+              n'ont aucun contenu à confronter à la requête. */}
+          {!searching &&
+            locked.map((g) => (
+              <LockedLessonRows
+                key={g.num}
+                num={g.num}
+                title={g.title}
+                count={g.count}
+                unit="mot"
+                reason={g.lockReason ?? "progress"}
+              />
+            ))}
         </div>
       )}
 

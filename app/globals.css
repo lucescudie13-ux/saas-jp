@@ -2282,6 +2282,40 @@ header.topbar{padding-left:64px}
   border-color:var(--vermilion);color:var(--vermilion-deep);
   box-shadow:0 0 0 3px color-mix(in srgb, var(--vermilion) 22%, transparent),var(--shadow);
 }
+/* — Leçon verrouillée : rendue en <span>, donc ni cliquable ni survolable — */
+.lesson-btn.locked{background:var(--paper-2);border-color:var(--line);color:var(--ink-faint);cursor:not-allowed;box-shadow:none}
+.lesson-btn.locked:hover{transform:none;border-color:var(--line);box-shadow:none}
+.lesson-btn-lock{font-size:15px;line-height:1;opacity:.55}
+
+/* — Niveau entier réservé : le bandeau d'examen devient un appel à l'abonnement — */
+.level-exam.is-locked{background:linear-gradient(150deg,#8f8a80,#615d56);border-color:#4d4a44;box-shadow:0 6px 16px rgba(34,32,29,.18)}
+.level-exam.is-locked:hover{box-shadow:0 10px 22px rgba(34,32,29,.24)}
+
+/* — Écran d'une leçon / d'un examen verrouillé — */
+.locked-card{max-width:520px;margin:6vh auto 0;text-align:center;background:var(--card);border:1px solid var(--line);
+  border-radius:22px;padding:44px 30px;box-shadow:var(--shadow)}
+.locked-ic{display:block;font-size:44px;line-height:1;margin-bottom:14px}
+.locked-card p{color:var(--ink-soft);font-size:15px;line-height:1.6;margin-bottom:22px}
+
+/* — Leçon non dévoilée dans une liste : on montre qu'il y a du contenu, sans
+     en livrer une ligne. Les barres sont factices ; le serveur n'a rien envoyé. — */
+.locked-lesson{border:1px dashed var(--line-strong);border-radius:18px;padding:16px 18px;background:var(--paper-2)}
+.locked-lesson-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.locked-lesson-num{flex:none;font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--ink-faint);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.locked-lesson-title{font-size:14.5px;font-weight:700;color:var(--ink-soft);min-width:0}
+.locked-lesson-count{margin-left:auto;flex:none;font-size:12.5px;font-weight:700;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.locked-lesson-ic{flex:none;font-size:15px;opacity:.5}
+.locked-lesson-bars{display:flex;flex-direction:column;gap:9px;margin:14px 0 12px;list-style:none;padding:0}
+.locked-lesson-bars li{display:flex;gap:12px;align-items:center}
+.locked-lesson-bars i{display:block;height:10px;border-radius:99px;background:var(--line);opacity:.75}
+.locked-lesson-why{font-size:12.5px;color:var(--ink-faint);line-height:1.5}
+.locked-lesson-why a{color:var(--vermilion-deep);font-weight:700}
+
+/* Puce « leçon d'origine » sur chaque ligne de vocabulaire. */
+.vlesson-chip{flex:none;font-size:10.5px;font-weight:800;color:var(--ink-faint);background:var(--paper-2);
+  border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-variant-numeric:tabular-nums}
+
 .lesson-dragon{position:absolute;left:50%;top:-30px;transform:translateX(-50%);width:34px;height:34px;pointer-events:none;z-index:3;animation:dragon-float 4s ease-in-out infinite}
 .lesson-dragon-img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 5px rgba(27,36,71,.3))}
 .lesson-dragon-emoji{font-size:26px;line-height:1}

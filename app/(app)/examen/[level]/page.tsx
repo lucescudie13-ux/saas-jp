@@ -2,12 +2,33 @@ import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { JLPT_LEVELS, LEVEL_LABELS, type JlptLevel } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/server";
+import { getAccess } from "@/server/access/access.service";
+import { canOpenExam, LOCKED_MESSAGE } from "@/lib/access";
 
 // Examen final = le « boss » du niveau. Page maquette pour l'instant.
 export default async function ExamenPage({ params }: { params: Promise<{ level: string }> }) {
   const { level } = await params;
   if (!JLPT_LEVELS.includes(level as JlptLevel)) notFound();
   const lv = level as JlptLevel;
+
+  const access = await getAccess(await createClient());
+  if (!canOpenExam(lv, access)) {
+    return (
+      <>
+        <div className="page-head">
+          <Link href={"/plan" as Route} className="vrac-back">← Plan d&apos;étude</Link>
+          <span className="pill-tag">{lv} · Examen</span>
+          <h1>Examen verrouillé</h1>
+        </div>
+        <div className="locked-card">
+          <span className="locked-ic" aria-hidden>🔒</span>
+          <p>{LOCKED_MESSAGE}</p>
+          <Link href={"/abonnement" as Route} className="btn primary">Voir les offres →</Link>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>

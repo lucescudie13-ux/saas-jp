@@ -95,6 +95,9 @@ export type LessonItemRow = { id: string; lesson_id: string; kind: ItemKind; ite
 export type ProfileRow = Timestamps & {
   id: string; email: string | null; display_name: string | null; avatar_url: string | null;
   current_level: JlptLevel; target_level: JlptLevel | null; target_deadline: string | null;
+  /** 'user' | 'admin' — un admin accède à tout sans abonnement (migration 010).
+   *  En lecture seule pour l'utilisateur : un trigger interdit l'auto-promotion. */
+  role: "user" | "admin";
 }
 
 export type UserPreferencesRow = Timestamps & {
