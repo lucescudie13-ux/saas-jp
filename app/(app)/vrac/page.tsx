@@ -1,8 +1,13 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { VRAC_GROUPS } from "@/lib/vrac";
+import { requireAdmin } from "@/server/access/admin-only";
 
-export default function VracPage() {
+// Espace de travail interne : brouillons et démonstrations. Réservé aux
+// administrateurs — ce n'est pas du contenu destiné aux abonnés.
+export default async function VracPage() {
+  await requireAdmin();
+
   return (
     <>
       <div className="page-head">

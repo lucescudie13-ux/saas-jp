@@ -2,10 +2,12 @@ import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { getVracLesson } from "@/lib/vrac";
+import { requireAdmin } from "@/server/access/admin-only";
 import { CourseSections } from "@/components/features/CourseSections";
 import { VocabFiche } from "@/components/features/VocabFiche";
 
 export default async function VracLessonPage({ params }: { params: Promise<{ slug: string }> }) {
+  await requireAdmin();
   const { slug } = await params;
   const lesson = getVracLesson(slug);
   if (!lesson) notFound();

@@ -2,7 +2,10 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database.types";
 
-const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/auth", "/", "/conditions", "/confidentialite", "/mentions-legales", "/telecharger", "/manifest.webmanifest", "/sw.js", "/api/stripe/webhook"];
+// `/robots.txt` et `/sitemap.xml` DOIVENT rester publics : sans ça le middleware
+// les redirige vers /login et les moteurs de recherche reçoivent une redirection
+// au lieu du fichier — le sitemap ne sert alors à rien.
+const PUBLIC_PATHS = ["/login", "/signup", "/forgot-password", "/auth", "/", "/conditions", "/confidentialite", "/mentions-legales", "/telecharger", "/manifest.webmanifest", "/sw.js", "/robots.txt", "/sitemap.xml", "/api/stripe/webhook"];
 
 // Chemins accessibles à un utilisateur CONNECTÉ mais NON abonné (quand le paywall
 // est actif) : la page d'abonnement (pour payer) et le profil (pour se déconnecter).

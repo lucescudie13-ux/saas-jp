@@ -31,6 +31,10 @@ const TRAINING: Item[] = [
 // « Application » — ce qui touche à l'outil lui-même, pas au compte.
 const APP_ITEMS: Item[] = [
   { href: "/telecharger" as Route, label: "Télécharger l'app", icon: "⬇️" },
+];
+
+// Réservé aux administrateurs : espace de brouillon, pas du contenu d'abonné.
+const ADMIN_ITEMS: Item[] = [
   { href: "/vrac" as Route, label: "Brouillon", icon: "🗒️" },
 ];
 
@@ -44,7 +48,7 @@ const ACCOUNT: Item[] = [
 const OVERLAY = "(max-width:880px)";
 const KEY = "hibi-sidebar-open";
 
-export function Sidebar({ level }: { level: JlptLevel }) {
+export function Sidebar({ level, isAdmin = false }: { level: JlptLevel; isAdmin?: boolean }) {
   const pathname = usePathname();
   // Fermée par défaut : c'est un panneau qu'on ouvre, pas une colonne fixe.
   // Le choix est mémorisé d'une visite à l'autre.
@@ -141,6 +145,15 @@ export function Sidebar({ level }: { level: JlptLevel }) {
         {APP_ITEMS.map((it) => (
           <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={closeIfOverlay} />
         ))}
+
+        {isAdmin && (
+          <>
+            <div className="nav-label">Administration</div>
+            {ADMIN_ITEMS.map((it) => (
+              <NavLink key={it.label} item={it} active={!!it.href && isActive(it.href)} onClick={closeIfOverlay} />
+            ))}
+          </>
+        )}
 
         <div className="nav-label">Gérer mon compte</div>
         {ACCOUNT.map((it) => (

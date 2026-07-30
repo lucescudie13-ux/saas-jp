@@ -2,9 +2,11 @@ import Link from "next/link";
 import type { Route } from "next";
 import { notFound } from "next/navigation";
 import { getVracLesson } from "@/lib/vrac";
+import { requireAdmin } from "@/server/access/admin-only";
 import { LessonExercise } from "@/components/features/LessonExercise";
 
 export default async function VracExercisePage({ params }: { params: Promise<{ slug: string }> }) {
+  await requireAdmin();
   const { slug } = await params;
   const lesson = getVracLesson(slug);
   if (!lesson || !lesson.exercise) notFound();

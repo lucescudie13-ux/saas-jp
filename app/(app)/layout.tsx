@@ -23,7 +23,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       {/* Le serveur a déjà le profil : il sait si le tutoriel doit s'afficher,
           sans qu'aucune requête supplémentaire soit nécessaire côté client. */}
       <Onboarding show={!current.profile?.onboarded_at} />
-      <Sidebar level={current.profile?.current_level ?? "N5"} />
+      <Sidebar
+        level={current.profile?.current_level ?? "N5"}
+        isAdmin={current.profile?.role === "admin"}
+      />
       <div className="content">
         <Topbar
           name={name}
